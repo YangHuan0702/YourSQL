@@ -1,0 +1,10 @@
+add_subdirectory(parser)
+
+add_library(YourDB STATIC ${ALL_OBJECT_FILES})
+
+find_package(Threads REQUIRED)
+set(THIRD_PARTY_LIBS sql_parser glog::glog Threads::Threads)
+target_link_libraries(YourDB ${CHICKEN_THIRD_PARTY_LIBS})
+target_include_directories(YourDB PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
