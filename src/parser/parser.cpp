@@ -6,6 +6,7 @@
 #include "SQLParser.h"
 #include "SQLParserResult.h"
 #include "glog/logging.h"
+#include "parser/transformer.h"
 
 using namespace YourSQL;
 
@@ -20,8 +21,8 @@ auto Parser::ParserSQL(const std::string &sql) -> void {
         return;
     }
 
-
-
+    Transformer transfomer;
+    transfomer.transformStatement(result,statements);
 }
 
 

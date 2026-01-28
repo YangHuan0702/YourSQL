@@ -1,4 +1,6 @@
-add_library(yoursql_parser OBJECT parser.cpp)
+add_subdirectory(transform)
+
+add_library(yoursql_parser OBJECT parser.cpp transformer.cpp)
 
 target_link_libraries(yoursql_parser glog::glog)
 
