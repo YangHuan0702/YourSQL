@@ -9,10 +9,10 @@ namespace YourSQL {
 
     class BaseExpression {
     public:
-        BaseExpression(ExpressionType type) : type(type) {}
-        virtual ~BaseExpression()  {}
+        explicit BaseExpression(ExpressionType type) : type(type) {}
+        virtual ~BaseExpression()  = default;
 
-        virtual auto to_string() -> std::string;
+        virtual auto to_string() -> std::string = 0;
 
         ExpressionType type;
     };

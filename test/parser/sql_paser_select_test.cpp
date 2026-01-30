@@ -5,7 +5,7 @@
 #include "parser/parser.h"
 
 TEST(Parser, ParserSelectSQLTest) {
-    std::string sql = "select * from user where name != 'yanghuan' limit0,10 group by age desc";
+    std::string sql = "select name,age,email from user where name != 'yanghuan' and age < 20 or del = 0 group by age limit 0 offset 10";
     YourSQL::Parser parser;
     parser.ParserSQL(sql);
 }

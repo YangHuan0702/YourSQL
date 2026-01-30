@@ -1,4 +1,4 @@
-add_library(yoursql_parser_transform OBJECT select_transform.cpp)
+add_library(yoursql_parser_transform OBJECT select_transform.cpp where_transform.cpp)
 
 target_link_libraries(yoursql_parser_transform glog::glog)
 

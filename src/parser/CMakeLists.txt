@@ -1,4 +1,6 @@
 add_subdirectory(transform)
+add_subdirectory(expression)
+add_subdirectory(table_ref)
 
 add_library(yoursql_parser OBJECT parser.cpp transformer.cpp)
 

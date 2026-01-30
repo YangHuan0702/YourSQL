@@ -9,7 +9,9 @@ namespace YourSQL {
     class StarExpression : public BaseExpression {
     public:
         explicit StarExpression() : BaseExpression(ExpressionType::STAR) {}
-        auto to_string() -> std::string {
+        ~StarExpression() override = default;
+
+        auto to_string() -> std::string override {
             return "*";
         }
     };

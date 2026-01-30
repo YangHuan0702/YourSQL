@@ -12,7 +12,6 @@ namespace YourSQL {
                                                                          column_name(std::move(column_name)),
                                                                          alias(std::move(alias)) {
         }
-
         ~ColumnExpression() override = default;
 
         auto to_string() -> std::string override;
