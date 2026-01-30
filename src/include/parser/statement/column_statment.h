@@ -3,6 +3,8 @@
 //
 #pragma once
 #include "parser/statement.h"
+#include <string>
+
 
 namespace YourSQL {
 
