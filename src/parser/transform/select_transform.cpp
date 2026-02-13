@@ -14,9 +14,11 @@ using namespace YourSQL;
 auto Transformer::transformSelect(hsql::SelectStatement *sqlStatement) -> std::unique_ptr<SelectStatement> {
     if (!sqlStatement) { return nullptr; }
 
+
+    auto statement = std::make_unique<SelectStatement>();
+
     // select xxx
     std::vector<std::unique_ptr<BaseExpression> > columns;
-    // TODO: 这里需要将expression换成Statment用来体现语句
     for (auto item: *sqlStatement->selectList) {
         switch (item->type) {
             case hsql::kExprStar:
