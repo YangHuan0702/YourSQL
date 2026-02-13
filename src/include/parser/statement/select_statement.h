@@ -15,8 +15,19 @@ namespace YourSQL {
             return "SelectStatement";
         }
 
+        auto GetSelectList() -> std::vector<std::unique_ptr<BaseExpression>> & {
+            return selectList;
+        }
+        auto SetTable(std::unique_ptr<YourTable> &table) -> void {
+            this->table_ = std::move(table);
+        }
+        auto SetWhereExpr(std::unique_ptr<BaseExpression> &newWhere) -> void{
+            this->whereExpression = std::move(newWhere);
+        }
 
         std::vector<std::unique_ptr<BaseExpression>> selectList;
         std::unique_ptr<YourTable> table_;
+        std::unique_ptr<BaseExpression> whereExpression;
     };
+
 }

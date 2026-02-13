@@ -18,16 +18,15 @@ auto Transformer::transformSelect(hsql::SelectStatement *sqlStatement) -> std::u
     auto statement = std::make_unique<SelectStatement>();
 
     // select xxx
-    std::vector<std::unique_ptr<BaseExpression> > columns;
     for (auto item: *sqlStatement->selectList) {
         switch (item->type) {
             case hsql::kExprStar:
-                columns.push_back(std::make_unique<StarExpression>());
+                statement->GetSelectList().push_back(std::make_unique<StarExpression>());
                 break;
             case hsql::kExprColumnRef: {
                 std::string column_name = item->name ? std::string(item->name) : "";
                 std::string alias_name = item->alias ? std::string(item->alias) : "";
-                columns.push_back(std::make_unique<ColumnExpression>(column_name, alias_name));
+                statement->GetSelectList().push_back(std::make_unique<ColumnExpression>(column_name, alias_name));
                 break;
             }
             default:
@@ -35,15 +34,19 @@ auto Transformer::transformSelect(hsql::SelectStatement *sqlStatement) -> std::u
                 LOG(ERROR) << "Unknown expression type: " << item->type;
                 break;
         }
-        std::cout << item->alias << std::endl;
     }
 
     // from xxx
     std::unique_ptr<YourTable> table = transformTableRef(sqlStatement->fromTable);
-
+    statement->SetTable(table);
 
     // where
-    transformWhere(sqlStatement->whereClause);
+    std::unique_ptr<BaseExpression> where_expression = transformWhere(sqlStatement->whereClause);
+    statement->SetWhereExpr(where_expression);
 
-    return nullptr;
+    // group by
+    // auto group_by_description = sqlStatement->groupBy;
+    // std::cout << "123" << std::endl;
+    // limit offset
+    return statement;
 }

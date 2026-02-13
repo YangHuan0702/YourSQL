@@ -10,7 +10,7 @@ namespace YourSQL {
         STAR = 1,
         COLUMN_REF = 2,
         SELECT = 3,
-        COMP = 4,
+        EXPR = 4,
         CONST = 5,
     };
 

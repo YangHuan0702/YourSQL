@@ -26,5 +26,13 @@ namespace YourSQL {
 
         auto transformOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
         auto transformStatement(const hsql::SQLStatement *sql_statement) -> std::unique_ptr<BaseStatement>;
+
+        auto transformLikeExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+        auto transformInExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+        auto transformIsNullOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+        auto transformLogicExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+        auto transformOrOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+        auto transformAndOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
     };
 }

@@ -12,12 +12,14 @@ namespace YourSQL {
     public:
         explicit CompExpression(OperatorType type, std::unique_ptr<BaseExpression> left,
                                 std::unique_ptr<BaseExpression> right)
-            : BaseExpression(ExpressionType::COMP), operator_type(type), left_(std::move(left)),right_(std::move(right)) {
+            : BaseExpression(ExpressionType::EXPR), operator_type(type), left_(std::move(left)),right_(std::move(right)) {
         }
+        CompExpression(const CompExpression &copy) noexcept = delete;
+        ~CompExpression() override = default;
 
-        ~CompExpression() override;
-
-        auto to_string() -> std::string override;
+        auto to_string() -> std::string override {
+            return "CompExpression";
+        }
 
         OperatorType operator_type;
 
