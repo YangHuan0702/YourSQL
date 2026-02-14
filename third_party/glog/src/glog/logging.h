@@ -1460,7 +1460,7 @@ class GLOG_EXPORT LogSink {
  public:
   virtual ~LogSink();
 
-  // Sink's logging logic (message_len is such as to exclude '\n' at the end).
+  // Sink's logging logical (message_len is such as to exclude '\n' at the end).
   // This method can't use LOG() or CHECK() as logging system mutex(s) are held
   // during this call.
   virtual void send(LogSeverity severity, const char* full_filename,
@@ -1469,17 +1469,17 @@ class GLOG_EXPORT LogSink {
                     size_t message_len) = 0;
 
   // Redefine this to implement waiting for
-  // the sink's logging logic to complete.
+  // the sink's logging logical to complete.
   // It will be called after each send() returns,
   // but before that LogMessage exits or crashes.
   // By default this function does nothing.
-  // Using this function one can implement complex logic for send()
+  // Using this function one can implement complex logical for send()
   // that itself involves logging; and do all this w/o causing deadlocks and
   // inconsistent rearrangement of log messages.
   // E.g. if a LogSink has thread-specific actions, the send() method
   // can simply add the message to a queue and wake up another thread that
   // handles real logging while itself making some LOG() calls;
-  // WaitTillSent() can be implemented to wait for that logic to complete.
+  // WaitTillSent() can be implemented to wait for that logical to complete.
   // See our unittest for an example.
   virtual void WaitTillSent();
 

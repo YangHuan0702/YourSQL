@@ -958,10 +958,10 @@ class FooTest : public testing::Test {
     shared_resource_ = nullptr;
   }
 
-  // You can define per-test set-up logic as usual.
+  // You can define per-test set-up logical as usual.
   void SetUp() override { ... }
 
-  // You can define per-test tear-down logic as usual.
+  // You can define per-test tear-down logical as usual.
   void TearDown() override { ... }
 
   // Some expensive resource shared by all tests.

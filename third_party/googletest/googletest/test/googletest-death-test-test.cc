@@ -1033,7 +1033,7 @@ bool MockDeathTestFactory::Create(
   return true;
 }
 
-// A test fixture for testing the logic of the GTEST_DEATH_TEST_ macro.
+// A test fixture for testing the logical of the GTEST_DEATH_TEST_ macro.
 // It installs a MockDeathTestFactory that is used for the duration
 // of the test case.
 class MacroLogicDeathTest : public testing::Test {

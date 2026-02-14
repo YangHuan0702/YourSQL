@@ -28,8 +28,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //
-// Each TEST() expands to some static registration logic.  GCC puts all
-// such static initialization logic for a translation unit in a common,
+// Each TEST() expands to some static registration logical.  GCC puts all
+// such static initialization logical for a translation unit in a common,
 // internal function.  Since Google's build system restricts how much
 // stack space a function can use, there's a limit on how many TEST()s
 // one can put in a single C++ test file.  This test ensures that a large

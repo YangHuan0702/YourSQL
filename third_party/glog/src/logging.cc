@@ -491,7 +491,7 @@ class LogDestination {
   static void FlushLogFiles(int min_severity);
   static void FlushLogFilesUnsafe(int min_severity);
 
-  // we set the maximum size of our packet to be 1400, the logic being
+  // we set the maximum size of our packet to be 1400, the logical being
   // to prevent fragmentation.
   // Really this number is arbitrary.
   static const int kNetworkBytes = 1400;

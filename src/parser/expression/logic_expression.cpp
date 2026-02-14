@@ -38,6 +38,6 @@ auto Transformer::transformLogicExpr(hsql::Expr *expr) -> std::unique_ptr<BaseEx
             return std::make_unique<LogicExpression>(logicType,c_name,Value(val));
         }
         default:
-            throw std::runtime_error("don`t know the logic OpType");
+            throw std::runtime_error("unknow the logical OpType");
     }
 }

@@ -38,7 +38,7 @@
 // slightly different test fixtures.  For example, you may want to
 // make sure that all tests for a GUI library don't leak important
 // system resources like fonts and brushes.  In Google Test, you do
-// this by putting the shared logic in a super (as in "super class")
+// this by putting the shared logical in a super (as in "super class")
 // test fixture, and then have each test case use a fixture derived
 // from this super fixture.
 
@@ -85,7 +85,7 @@ class QuickTest : public testing::Test {
 // fixture.  All tests using this fixture will be automatically
 // required to be quick.
 class IntegerFunctionTest : public QuickTest {
-  // We don't need any more logic than already in the QuickTest fixture.
+  // We don't need any more logical than already in the QuickTest fixture.
   // Therefore the body is empty.
 };
 
@@ -131,7 +131,7 @@ TEST_F(IntegerFunctionTest, IsPrime) {
 // The next test case (named "QueueTest") also needs to be quick, so
 // we derive another fixture from QuickTest.
 //
-// The QueueTest test fixture has some logic and shared objects in
+// The QueueTest test fixture has some logical and shared objects in
 // addition to what's in QuickTest already.  We define the additional
 // stuff inside the body of the test fixture, as usual.
 class QueueTest : public QuickTest {

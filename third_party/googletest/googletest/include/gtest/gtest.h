@@ -321,7 +321,7 @@ class GTEST_API_ [[nodiscard]] Test {
 
   // Runs the test after the test fixture has been set up.
   //
-  // A sub-class must implement this to define the test logic.
+  // A sub-class must implement this to define the test logical.
   //
   // DO NOT OVERRIDE THIS FUNCTION DIRECTLY IN A USER PROGRAM.
   // Instead, use the TEST or TEST_F macro.

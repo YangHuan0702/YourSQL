@@ -1239,7 +1239,7 @@ TEST(SafeFNMatch, logging) {
 static vector<string> global_messages;
 
 // helper for TestWaitingLogSink below.
-// Thread that does the logic of TestWaitingLogSink
+// Thread that does the logical of TestWaitingLogSink
 // It's free to use LOG() itself.
 class TestLogSinkWriter {
  public:
@@ -1304,7 +1304,7 @@ class TestLogSinkWriter {
       RAW_LOG(INFO, "Sink got a messages");  // only RAW_LOG under mutex_ here
       string message = messages_.front();
       messages_.pop();
-      // Normally this would be some more real/involved logging logic
+      // Normally this would be some more real/involved logging logical
       // where LOG() usage can't be eliminated,
       // e.g. pushing the message over with an RPC:
       size_t messages_left = messages_.size();
@@ -1351,7 +1351,7 @@ class TestWaitingLogSink : public LogSink {
             size_t message_len) override {
     // Push it to Writer thread if we are the original logging thread.
     // Note: Something like ThreadLocalLogSink is a better choice
-    //       to do thread-specific LogSink logic for real.
+    //       to do thread-specific LogSink logical for real.
     if (tid_ == std::this_thread::get_id()) {
       writer_.Buffer(ToString(severity, base_filename, line, logmsgtime,
                               message, message_len));

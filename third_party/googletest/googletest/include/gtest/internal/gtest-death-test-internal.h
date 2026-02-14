@@ -124,7 +124,7 @@ class GTEST_API_ [[nodiscard]] DeathTest {
   };
 
   // An enumeration of possible roles that may be taken when a death
-  // test is encountered.  EXECUTE means that the death test logic should
+  // test is encountered.  EXECUTE means that the death test logical should
   // be executed immediately.  OVERSEE means that the program should prepare
   // the appropriate environment for a child process to execute the death
   // test, then wait for it to complete.

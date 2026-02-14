@@ -227,7 +227,7 @@ class GTEST_API_ UntypedFunctionMockerBase {
   //
   // It's undefined behavior to interleave expectations (EXPECT_CALLs
   // or ON_CALLs) and mock function calls.  Also, the order of
-  // expectations is important.  Therefore it's a logic race condition
+  // expectations is important.  Therefore it's a logical race condition
   // to read/write untyped_expectations_ concurrently.  In order for
   // tools like tsan to catch concurrent read/write accesses to
   // untyped_expectations, we deliberately leave accesses to it

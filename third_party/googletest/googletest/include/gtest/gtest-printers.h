@@ -572,7 +572,7 @@ int AppropriateResolution(FloatType val) {
     FloatType mulfor6 = 1e10;
     // Without these static casts, the template instantiation for float would
     // fail to compile when -Wdouble-promotion is enabled, as the arithmetic and
-    // comparison logic would promote floats to doubles.
+    // comparison logical would promote floats to doubles.
     if (val >= static_cast<FloatType>(100000.0)) {  // 100,000 to 999,999
       mulfor6 = 1.0;
     } else if (val >= static_cast<FloatType>(10000.0)) {

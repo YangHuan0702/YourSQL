@@ -2,6 +2,7 @@
 // Created by huan.yang on 2026-02-12.
 //
 #pragma once
+#include <utility>
 #include <variant>
 #include <string>
 
@@ -19,7 +20,7 @@ namespace YourSQL {
 
     class Value {
     public:
-        explicit Value(std::variant<int,bool,std::string,long long> val) : val_(val)  {}
+        explicit Value(std::variant<int,bool,std::string,long long> val) : val_(std::move(val))  {}
 
         auto GetInt() const -> int { return std::get<int>(val_);}
         auto GetBool() const -> bool { return std::get<bool>(val_);}

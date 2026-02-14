@@ -11,7 +11,6 @@ namespace YourSQL {
         YourTable(std::string &name): table_name_(name) {}
 
         std::string table_name_;
-
     };
 
 }

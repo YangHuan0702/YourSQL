@@ -35,7 +35,7 @@
 // Writing a unit test using Google C++ testing framework is easy as 1-2-3:
 
 // Step 1. Include necessary header files such that the stuff your
-// test logic needs is declared.
+// test logical needs is declared.
 //
 // Don't forget gtest.h, which declares the testing framework.
 
@@ -49,7 +49,7 @@ namespace {
 // Step 2. Use the TEST macro to define your tests.
 //
 // TEST has two parameters: the test case name and the test name.
-// After using the macro, you should define your test logic between a
+// After using the macro, you should define your test logical between a
 // pair of braces.  You can use a bunch of macros to indicate the
 // success or failure of a test.  EXPECT_TRUE and EXPECT_EQ are
 // examples of such macros.  For a complete list, see gtest.h.

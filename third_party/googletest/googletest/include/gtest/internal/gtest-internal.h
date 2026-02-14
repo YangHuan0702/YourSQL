@@ -999,7 +999,7 @@ inline bool ArrayEq(const T (&lhs)[N], const U (&rhs)[N]) {
   return internal::ArrayEq(lhs, N, rhs);
 }
 
-// This helper reduces code bloat.  If we instead put its logic inside
+// This helper reduces code bloat.  If we instead put its logical inside
 // the previous ArrayEq() function, arrays with different sizes would
 // lead to different copies of the template code.
 template <typename T, typename U>
@@ -1039,7 +1039,7 @@ inline void CopyArray(const T (&from)[N], U (*to)[N]) {
   internal::CopyArray(from, N, *to);
 }
 
-// This helper reduces code bloat.  If we instead put its logic inside
+// This helper reduces code bloat.  If we instead put its logical inside
 // the previous CopyArray() function, arrays with different sizes
 // would lead to different copies of the template code.
 template <typename T, typename U>

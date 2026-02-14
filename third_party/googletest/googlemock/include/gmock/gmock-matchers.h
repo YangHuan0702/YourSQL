@@ -426,7 +426,7 @@ class [[nodiscard]] MatcherCastImpl<T, Matcher<U>> {
     explicit Impl(const Matcher<U>& source_matcher)
         : source_matcher_(source_matcher) {}
 
-    // We delegate the matching logic to the source matcher.
+    // We delegate the matching logical to the source matcher.
     bool MatchAndExplain(ImplArgT x,
                          MatchResultListener* listener) const override {
       using FromType = typename std::remove_cv<typename std::remove_pointer<
@@ -2778,7 +2778,7 @@ class [[nodiscard]] PointwiseMatcher {
   const RhsStlContainer rhs_;
 };
 
-// Holds the logic common to ContainsMatcherImpl and EachMatcherImpl.
+// Holds the logical common to ContainsMatcherImpl and EachMatcherImpl.
 template <typename Container>
 class [[nodiscard]] QuantifierMatcherImpl : public MatcherInterface<Container> {
  public:
@@ -3825,7 +3825,7 @@ struct UnorderedMatcherRequire {
 };
 
 // Untyped base class for implementing UnorderedElementsAre.  By
-// putting logic that's not specific to the element type here, we
+// putting logical that's not specific to the element type here, we
 // reduce binary bloat and increase compilation speed.
 class GTEST_API_ [[nodiscard]] UnorderedElementsAreMatcherImplBase {
  protected:

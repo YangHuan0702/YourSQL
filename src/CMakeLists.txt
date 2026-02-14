@@ -1,4 +1,5 @@
 add_subdirectory(parser)
+add_subdirectory(catalog)
 
 add_library(YourDB SHARED ${ALL_OBJECT_FILES})
 

@@ -45,7 +45,7 @@
 // This flag controls the style of death tests.  Valid values are "threadsafe",
 // meaning that the death test child process will re-execute the test binary
 // from the start, running only a single death test, or "fast",
-// meaning that the child process will execute the test logic immediately
+// meaning that the child process will execute the test logical immediately
 // after forking.
 GTEST_DECLARE_string_(death_test_style);
 
