@@ -14,7 +14,8 @@ namespace YourSQL {
         BOOL,
         VARCHAR,
         VARCHAR2,
-        TIMESTAMP
+        TIMESTAMP,
+        NULLTYPE
     };
 
 

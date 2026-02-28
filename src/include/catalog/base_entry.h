@@ -10,7 +10,7 @@ namespace YourSQL {
     class BaseEntry{
     public:
         explicit BaseEntry(entry_id id,std::string &name) : id_(id),name_(std::move(name)) {}
-        virtual ~BaseEntry() = 0;
+        virtual ~BaseEntry() = default;
 
         virtual auto to_string() -> std::string = 0;
 

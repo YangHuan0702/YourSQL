@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <mutex>
 
 #include "base_entry.h"
 #include "column_entry.h"
@@ -18,7 +19,11 @@ namespace YourSQL {
 
         auto to_string() -> std::string override;
 
-        std::unordered_map<std::string,size_t> column_map_;
+        auto GetNextColumnId() -> int;
+
+        std::mutex lock;
+        int column_id = 1;
+        std::unordered_map<int,size_t> column_map_;
         std::vector<std::unique_ptr<ColumnEntry>> columns_;
     };
 
