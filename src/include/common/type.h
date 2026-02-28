@@ -7,7 +7,7 @@
 namespace YourSQL {
 
     typedef uint64_t entry_id;
-
-
+    typedef uint8_t table_id;
+    typedef uint8_t column_id;
 }
 

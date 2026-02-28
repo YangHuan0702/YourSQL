@@ -8,12 +8,6 @@ using namespace YourSQL;
 TableEntry::TableEntry(entry_id id, std::string &name) : BaseEntry(id,name) {
 }
 
-
-auto TableEntry::GetNextColumnId() -> int {
-    std::lock_guard guard(lock);
-    return column_id++;
-}
-
 auto TableEntry::to_string() -> std::string {
     return name_;
 }

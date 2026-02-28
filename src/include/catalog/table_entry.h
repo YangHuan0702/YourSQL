@@ -9,6 +9,7 @@
 
 #include "base_entry.h"
 #include "column_entry.h"
+#include "index_entry.h"
 
 namespace YourSQL {
 
@@ -19,11 +20,10 @@ namespace YourSQL {
 
         auto to_string() -> std::string override;
 
-        auto GetNextColumnId() -> int;
-
         std::mutex lock;
-        int column_id = 1;
-        std::unordered_map<int,size_t> column_map_;
+
+        std::unique_ptr<IndexEntry> index_entry;
+        std::unordered_map<std::string,entry_id> column_name_idx;
         std::vector<std::unique_ptr<ColumnEntry>> columns_;
     };
 
