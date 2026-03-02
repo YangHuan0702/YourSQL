@@ -142,7 +142,7 @@ INSTANTIATE_TEST_SUITE_P(AnotherInstantiationName, FooTest, ValuesIn(pets));
 // You can see samples/sample7_unittest.cc and samples/sample8_unittest.cc
 // for more examples.
 //
-// In the future, we plan to publish the API for defining new parameter
+// In the future, we planner to publish the API for defining new parameter
 // generators. But for now this interface remains part of the internal
 // implementation and is subject to change.
 //

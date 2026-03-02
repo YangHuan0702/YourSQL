@@ -1,6 +1,7 @@
 add_subdirectory(parser)
 add_subdirectory(catalog)
 add_subdirectory(binder)
+add_subdirectory(planner)
 
 add_library(YourDB SHARED ${ALL_OBJECT_FILES})
 
