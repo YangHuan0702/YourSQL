@@ -13,7 +13,7 @@ namespace YourSQL {
     class InExpression: public BaseExpression {
 
     public:
-        explicit InExpression(const std::string &column_name, const std::vector<Value> &values): BaseExpression(ExpressionType::EXPR),target_column_(std::move(column_name)),values_(values) {}
+        explicit InExpression(const std::string &column_name, const std::vector<Value> &values): BaseExpression(ExpressionType::OPERATOR),target_column_(std::move(column_name)),values_(values) {}
         ~InExpression() override = default;
         auto to_string() -> std::string override {
             return "InExpression";

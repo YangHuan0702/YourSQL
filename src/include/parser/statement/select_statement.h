@@ -2,6 +2,8 @@
 // Created by huan.yang on 2026-01-28.
 //
 #pragma once
+#include <memory>
+
 #include "parser/statement.h"
 #include "parser/table_ref/your_table.h"
 

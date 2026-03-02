@@ -2,7 +2,6 @@
 #define SQLPARSER_EXPR_H
 
 #include <stdlib.h>
-#include <memory>
 #include <vector>
 #include "ColumnType.h"
 

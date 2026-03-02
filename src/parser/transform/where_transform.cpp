@@ -6,11 +6,11 @@
 #include "parser/transformer.h"
 using namespace YourSQL;
 
-auto Transformer::transformWhere(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
+auto Transformer::transformWhere(hsql::Expr *expr,std::unique_ptr<YourTable> &table) -> std::unique_ptr<BaseExpression> {
     if (!expr) return nullptr;
     switch (expr->type) {
         case hsql::kExprOperator:
-            return transformOperator(expr);
+            return transformOperator(expr,table->table_name_);
         default:
             throw std::runtime_error("Invalid Where SQL expression");
     }

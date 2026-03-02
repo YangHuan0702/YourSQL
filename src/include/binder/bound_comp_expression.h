@@ -3,15 +3,20 @@
 //
 #pragma once
 #include "bound_expression.h"
+#include "common/types/expression_types.h"
 
 namespace YourSQL {
 
     class BoundCompExpression : public BoundExpression {
     public:
-        explicit BoundCompExpression();
+        explicit BoundCompExpression(OperatorType opType,ColumnTypes returnType) : BoundExpression(returnType), op_type_(opType){}
         ~BoundCompExpression() override = default;
 
-        auto to_string() -> std::string override;
+        auto to_string() -> std::string override {
+            return "BoundCompExpression";
+        }
+
+        OperatorType op_type_;
     };
 
 }

@@ -11,7 +11,7 @@ namespace YourSQL {
 
     class LogicExpression : public BaseExpression {
     public:
-        explicit LogicExpression(const OperatorType optType,std::string column, Value value) : BaseExpression(ExpressionType::EXPR), type_(optType),target_column(std::move(column)),value(std::move(value)) {}
+        explicit LogicExpression(const OperatorType optType,std::string column, Value value,std::string table_name) : BaseExpression(ExpressionType::OPERATOR), type_(optType),target_column(std::move(column)),value(std::move(value)),target_table(std::move(table_name)) {}
         ~LogicExpression() override = default;
 
         auto to_string() -> std::string override {
@@ -21,6 +21,7 @@ namespace YourSQL {
         OperatorType type_;
         std::string target_column;
         Value value;
+        std::string target_table;
     };
 
 }

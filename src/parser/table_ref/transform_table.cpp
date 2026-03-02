@@ -1,8 +1,9 @@
 //
 // Created by huan.yang on 2026-01-30.
 //
-#include "parser/transformer.h"
+#include <iostream>
 
+#include "parser/transformer.h"
 using namespace YourSQL;
 
 auto Transformer::transformTableRef(hsql::TableRef *table_ref) -> std::unique_ptr<YourTable> {

@@ -14,10 +14,13 @@ namespace YourSQL {
         }
         ~BoundSelectStatement() override = default;
 
-        auto to_string() -> std::string override;
+        auto to_string() -> std::string override {
+            return "BoundSelectStatement";
+        }
 
         std::vector<std::unique_ptr<BoundColumnRefExpression>> select_;
         std::unique_ptr<BoundTableRefExpression> table_;
+        std::unique_ptr<BoundExpression> where_expr_;
     };
 
 }

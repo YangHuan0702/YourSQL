@@ -12,6 +12,7 @@ namespace YourSQL {
         SELECT = 3,
         EXPR = 4,
         CONST = 5,
+        OPERATOR = 6,
     };
 
 
@@ -19,7 +20,7 @@ namespace YourSQL {
         INVALID,
         AND,
         OR,
-
+        ISN,
         GT,
         GTE,
         LT,
@@ -27,6 +28,8 @@ namespace YourSQL {
         EQ,
         NEQ,
 
+        LIKE,
+        LIKEN,
         IN,
         NOT_IN,
     };

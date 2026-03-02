@@ -9,7 +9,7 @@
 namespace YourSQL {
     class IsNullExpression : public BaseExpression {
     public:
-        explicit IsNullExpression(const std::string &column) :BaseExpression(ExpressionType::EXPR),target_column(std::move(column)){}
+        explicit IsNullExpression(const std::string &column) :BaseExpression(ExpressionType::OPERATOR),target_column(std::move(column)){}
         ~IsNullExpression() override = default;
 
         auto to_string() -> std::string override {

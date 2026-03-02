@@ -11,7 +11,7 @@ namespace YourSQL {
     class LikeExpression : public BaseExpression {
 
     public:
-        explicit LikeExpression(const std::string &column, const std::string &value) : BaseExpression(ExpressionType::EXPR),target_column(std::move(column)), like_value(std::move(value)) {}
+        explicit LikeExpression(const std::string &column, const std::string &value) : BaseExpression(ExpressionType::OPERATOR),target_column(std::move(column)), like_value(std::move(value)) {}
         ~LikeExpression() override = default;
 
         auto to_string() -> std::string override {

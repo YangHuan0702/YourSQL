@@ -24,11 +24,11 @@ auto Binder::BoundSelectStatement(std::unique_ptr<SelectStatement> parser_statem
         }
     }
 
-
     // table
     ans->table_ = BoundTableRefExpression(parser_statement->table_->table_name_);
 
-    // TODO(where)
+    // where
+    ans->where_expr_ = BoundCompExpression(parser_statement->whereExpression);
 
     return ans;
 }

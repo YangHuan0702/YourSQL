@@ -12,14 +12,14 @@ namespace YourSQL {
 
     class ColumnEntry :public BaseEntry {
     public:
-        explicit ColumnEntry(entry_id id, std::string &name,ColumnTypes type);
+        explicit ColumnEntry(entry_id id, std::string name,ColumnTypes type);
         ~ColumnEntry() override = default;
 
         auto to_string() -> std::string override;
 
-        Value default_value_;
         ColumnTypes column_types;
         size_t max_size_;
+        Value default_value_;
     };
 
 }

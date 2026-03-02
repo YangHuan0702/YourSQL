@@ -6,10 +6,12 @@
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <memory>
 
-#include "base_entry.h"
-#include "column_entry.h"
-#include "index_entry.h"
+#include "catalog/base_entry.h"
+#include "catalog/column_entry.h"
+#include "catalog/index_entry.h"
+#include "common/util/IdUtil.h"
 
 namespace YourSQL {
 
@@ -22,9 +24,14 @@ namespace YourSQL {
 
         std::mutex lock;
 
+        auto AddColumn(std::unique_ptr<ColumnEntry> column_entry) -> void {
+            column_name_idx[column_entry->name_] = column_entry->id_;
+            columns_[column_entry->id_] = std::move(column_entry);
+        }
+
         std::unique_ptr<IndexEntry> index_entry;
         std::unordered_map<std::string,entry_id> column_name_idx;
-        std::vector<std::unique_ptr<ColumnEntry>> columns_;
+        std::unordered_map<entry_id,std::unique_ptr<ColumnEntry>> columns_;
     };
 
 }

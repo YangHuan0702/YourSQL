@@ -41,7 +41,7 @@ auto Transformer::transformSelect(hsql::SelectStatement *sqlStatement) -> std::u
     statement->SetTable(table);
 
     // where
-    std::unique_ptr<BaseExpression> where_expression = transformWhere(sqlStatement->whereClause);
+    std::unique_ptr<BaseExpression> where_expression = transformWhere(sqlStatement->whereClause,statement->table_);
     statement->SetWhereExpr(where_expression);
 
     // group by

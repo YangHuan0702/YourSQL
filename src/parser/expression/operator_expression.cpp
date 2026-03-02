@@ -7,24 +7,24 @@
 using namespace YourSQL;
 
 
-auto Transformer::transformAndOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
-    auto left = transformOperator(expr->expr);
-    auto right = transformOperator(expr->expr2);
+auto Transformer::transformAndOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
+    auto left = transformOperator(expr->expr,table_name);
+    auto right = transformOperator(expr->expr2,table_name);
     return std::make_unique<CompExpression>(OperatorType::AND,std::move(left),std::move(right));
 }
 
-auto Transformer::transformOrOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
-    auto left = transformOperator(expr->expr);
-    auto right = transformOperator(expr->expr2);
+auto Transformer::transformOrOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
+    auto left = transformOperator(expr->expr,table_name);
+    auto right = transformOperator(expr->expr2,table_name);
   return std::make_unique<CompExpression>(OperatorType::OR,std::move(left),std::move(right));
 }
 
-auto Transformer::transformOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
+auto Transformer::transformOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
     switch (expr->opType) {
         case hsql::kOpOr:
-            return transformOrOperator(expr);
+            return transformOrOperator(expr,table_name);
         case hsql::kOpAnd:
-            return transformAndOperator(expr);
+            return transformAndOperator(expr,table_name);
         case hsql::kOpLike:
         case hsql::kOpNotLike:
             return transformLikeExpr(expr);
@@ -36,7 +36,7 @@ auto Transformer::transformOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExp
         case hsql::kOpGreaterEq:
         case hsql::kOpEquals:
         case hsql::kOpNotEquals:
-            return transformLogicExpr(expr);
+            return transformLogicExpr(expr,table_name);
         case hsql::kOpIsNull:
             return transformIsNullOperator(expr);
         default:

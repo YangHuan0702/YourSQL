@@ -14,7 +14,7 @@ auto Binder::BoundStarExpression(std::string &table_name) -> std::unique_ptr<You
 
     auto bound_star_expression = std::make_unique<class BoundStarExpression>();
     for (const auto &column_entry : table_entry->columns_) {
-        bound_star_expression->columns_.push_back(BoundColumnRefExpression(table_name,column_entry->name_));
+        bound_star_expression->columns_.push_back(BoundColumnRefExpression(table_name,column_entry.second->name_));
     }
     return bound_star_expression;
 }

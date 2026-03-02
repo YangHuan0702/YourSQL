@@ -8,7 +8,7 @@
 using namespace YourSQL;
 
 
-auto Transformer::transformLogicExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
+auto Transformer::transformLogicExpr(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
     switch (expr->opType) {
         case hsql::kOpNotEquals:
         case hsql::kOpEquals: {
@@ -16,7 +16,7 @@ auto Transformer::transformLogicExpr(hsql::Expr *expr) -> std::unique_ptr<BaseEx
             std::string column = expr->expr->getName();
             //TODO：这里需要根据字段的类型来获取指定位置的值
             std::string val = expr->expr2->getName();
-            return std::make_unique<LogicExpression>(type,column,Value(val));
+            return std::make_unique<LogicExpression>(type,column,Value(val),table_name);
         }
         case hsql::kOpLess:
         case hsql::kOpLessEq:
@@ -35,7 +35,7 @@ auto Transformer::transformLogicExpr(hsql::Expr *expr) -> std::unique_ptr<BaseEx
 
             std::string c_name = expr->expr->getName();
             long long val = expr->expr2->ival;
-            return std::make_unique<LogicExpression>(logicType,c_name,Value(val));
+            return std::make_unique<LogicExpression>(logicType,c_name,Value(val),table_name);
         }
         default:
             throw std::runtime_error("unknow the logical OpType");

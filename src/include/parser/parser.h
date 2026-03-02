@@ -17,6 +17,9 @@ namespace YourSQL {
         ~Parser() = default;
 
         auto ParserSQL(const std::string &sql) -> void;
+        auto GetStatements() -> std::vector<std::unique_ptr<BaseStatement>>& {
+            return statements;
+        }
     private:
         std::vector<std::unique_ptr<BaseStatement>> statements;
     };
