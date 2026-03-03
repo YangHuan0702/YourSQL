@@ -7,5 +7,10 @@
 namespace YourSQL {
 
     typedef uint64_t entry_id;
+
+    typedef uint64_t page_id_t;
+
+    typedef uint32_t row_id_t;
+
 }
 

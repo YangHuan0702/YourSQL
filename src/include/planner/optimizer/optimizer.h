@@ -26,7 +26,6 @@ namespace YourSQL {
         auto ConstantFold(std::unique_ptr<LogicalOperator> node) -> std::unique_ptr<LogicalOperator>;
 
         std::unique_ptr<LogicalOperator> logical_plan_;
-
     };
 
 
