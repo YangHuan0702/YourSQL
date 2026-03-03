@@ -7,7 +7,6 @@
 #include "catalog/column_entry.h"
 
 namespace YourSQL {
-
     class Schema {
     public:
         std::vector<ColumnEntry> columns_;
@@ -17,11 +16,11 @@ namespace YourSQL {
 
     class Tuple {
     public:
-        explicit Tuple(char *data, const Schema &schema) : data_(data), tuple_size_(schema.tuple_size_) {}
+        explicit Tuple(char *data, const Schema &schema) : data_(data), tuple_size_(schema.tuple_size_) {
+        }
+        ~Tuple() = default;
 
         char *data_;
         uint32_t tuple_size_;
-
     };
-
 }
