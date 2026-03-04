@@ -16,10 +16,11 @@ namespace YourSQL {
 
     class Tuple {
     public:
-        explicit Tuple(char *data, const Schema &schema) : data_(data), tuple_size_(schema.tuple_size_) {
+        explicit Tuple(char *data, const Schema &schema) : schema_(schema),data_(data), tuple_size_(schema.tuple_size_) {
         }
         ~Tuple() = default;
 
+        Schema schema_;
         char *data_;
         uint16_t tuple_size_;
     };
