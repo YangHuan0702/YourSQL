@@ -10,7 +10,7 @@ namespace YourSQL {
     class Schema {
     public:
         std::vector<ColumnEntry> columns_;
-        uint32_t tuple_size_;
+        uint16_t tuple_size_;
     };
 
 
@@ -21,6 +21,6 @@ namespace YourSQL {
         ~Tuple() = default;
 
         char *data_;
-        uint32_t tuple_size_;
+        uint16_t tuple_size_;
     };
 }

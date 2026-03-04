@@ -2,6 +2,9 @@
 // Created by huan.yang on 2026-03-03.
 //
 #pragma once
+#include <memory>
+#include <shared_mutex>
+
 #include "tuple.h"
 #include "buffer/page.h"
 #include "storage/r_id.h"
@@ -29,17 +32,18 @@ namespace YourSQL {
         explicit TablePage(Page *page);
         ~TablePage() = default;
 
-        auto GetCount() -> int;
+        auto GetCount() -> uint32_t;
 
-        auto InsertTuple(const Tuple &tuple,const RID &rid) -> void;
+        auto InsertTuple(const Tuple &tuple,RID *rid) -> bool;
         auto updateTuple(const Tuple &tuple,const RID &rid) -> void;
         auto DeleteTuple(const RID &rid) -> void;
         auto GetTuple(const RID &rid, Tuple *tuple);
 
-
     private:
+
         Page *page_;
         TableHeader header_{};
         uint32_t free_size;
+        std::mutex mutex_;
     };
 }
