@@ -7,11 +7,14 @@
 #include <vector>
 #include <memory>
 
+#include "common/types/expression_types.h"
+
+
 namespace YourSQL {
 
     class BoundExpression {
     public:
-        explicit BoundExpression(ColumnTypes types) : return_type_(types) {}
+        explicit BoundExpression(ColumnTypes types,ExpressionType expr_type) : expression_type_(expr_type),return_type_(types) {}
         virtual ~BoundExpression() = default;
 
         virtual auto to_string() -> std::string = 0;
@@ -20,6 +23,7 @@ namespace YourSQL {
             children_.push_back(std::move(children));
         }
 
+        ExpressionType expression_type_;
         ColumnTypes return_type_;
         std::vector<std::unique_ptr<BoundExpression>> children_;
     };

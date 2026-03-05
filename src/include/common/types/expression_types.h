@@ -10,9 +10,9 @@ namespace YourSQL {
         STAR = 1,
         COLUMN_REF = 2,
         SELECT = 3,
-        EXPR = 4,
+        BINARY = 4,
         CONST = 5,
-        OPERATOR = 6,
+        UNARY = 6,
     };
 
 

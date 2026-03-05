@@ -15,4 +15,30 @@ namespace YourSQL {
         LIMIT
     };
 
+    enum class UnaryOp {
+        IS_NULL,
+        NOT_NULL
+    };
+
+    enum class BinaryOp {
+        ADD,
+        SUB,
+        MU,
+        DE,
+        GT,
+        GTE,
+        LT,
+        LTE,
+        EQ,
+        NEQ,
+        LIKE,
+        NLIKE,
+        IN,
+        CANCAT,
+
+
+        AND,
+        OR,
+    };
+
 }

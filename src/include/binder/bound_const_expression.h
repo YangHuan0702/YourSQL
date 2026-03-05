@@ -8,7 +8,7 @@ namespace YourSQL {
 
     class BoundConstExpression : public BoundExpression {
     public:
-        explicit BoundConstExpression(Value value) : BoundExpression(ColumnTypes::INVALID), value_(std::move(value)) {}
+        explicit BoundConstExpression(Value value) : BoundExpression(ColumnTypes::INVALID,ExpressionType::CONST), value_(std::move(value)) {}
         ~BoundConstExpression() override = default;
 
         auto to_string() -> std::string override {

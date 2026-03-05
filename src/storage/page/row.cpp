@@ -8,7 +8,7 @@
 
 using namespace YourSQL;
 
-auto Row::Deserialize(Tuple &tuple) -> void {
+auto Row::Deserialize(const Tuple &tuple) -> void {
     auto data = tuple.data_;
     this->schema_ = tuple.schema_;
 

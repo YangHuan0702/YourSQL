@@ -13,18 +13,24 @@ auto Planner::LogicalSelectPlan(std::unique_ptr<BoundSelectStatement> select_sta
     /**
      * Scan -> Filter -> agg -> projection -> limit -> grouo by
      */
-    auto root = std::make_unique<LogicalSeqScan>(select_statement->table_->table_id_);
+    std::unique_ptr<LogicalOperator> root = std::make_unique<LogicalSeqScan>(select_statement->table_->table_id_);
+    root->SetLogicalOpType(LogicalOperatorType::LOGICAL_GET);
 
     // filter
     if (select_statement->where_expr_) {
         auto filter = std::make_unique<LogicalFilter>(std::move(select_statement->where_expr_->children_));
+        filter->SetLogicalOpType(LogicalOperatorType::LOGICAL_FILTER);
         filter->children_.push_back(std::move(root));
         root = std::move(filter);
     }
 
     // projection
-    if (select_statement->select_) {
-        auto projection = std::make_unique<LogicalProjection>(std::move(select_statement->select_->children_));
+    if (!select_statement->select_.empty() ) {
+        auto projection = std::make_unique<LogicalProjection>();
+        for (auto &bound_expression : select_statement->select_) {
+            projection->expressions_.push_back(std::move(bound_expression));
+        }
+        projection->SetLogicalOpType(LogicalOperatorType::LOGICAL_PROJECTION);
         projection->children_.push_back(std::move(root));
         root = std::move(projection);
     }

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "SQLParserResult.h"
+#include "common/types/plan_operator_types.h"
 #include "expression/select_expression.h"
 #include "sql/CreateStatement.h"
 #include "parser/statement.h"
@@ -33,6 +34,9 @@ namespace YourSQL {
         auto transformLogicExpr(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
         auto transformOrOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
         auto transformAndOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
+        auto transformBinaryOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
+        auto transformUnaryOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
+        static auto transformOperatorType(hsql::OperatorType type) -> BinaryOp;
 
     };
 }

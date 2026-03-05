@@ -30,9 +30,9 @@ namespace YourSQL {
         auto BoundAndExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
         auto BoundLikeExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
         auto BoundInExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
-        auto BoundLogicalCompExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
+        auto BoundBinaryExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
         auto BoundIsNullExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
-        auto BoundConstExpression(Value &value) -> std::unique_ptr<BoundExpression> {
+        static auto BoundConstExpression(Value &value) -> std::unique_ptr<BoundExpression> {
             return std::make_unique<YourSQL::BoundConstExpression>(value);
         }
         std::shared_ptr<Catalog> catalog_;

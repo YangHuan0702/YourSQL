@@ -15,6 +15,10 @@ namespace YourSQL {
 
         virtual auto to_string () -> std::string = 0;
 
+        auto SetLogicalOpType(LogicalOperatorType type) -> void {
+            this->type_ = type;
+        }
+
         LogicalOperatorType type_;
         std::vector<std::unique_ptr<LogicalOperator>> children_;
     };

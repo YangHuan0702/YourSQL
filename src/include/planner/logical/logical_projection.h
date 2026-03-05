@@ -8,7 +8,8 @@
 namespace YourSQL {
     class LogicalProjection final : public LogicalOperator {
     public:
-        explicit LogicalProjection(std::vector<std::unique_ptr<BoundExpression>> expressions) : LogicalOperator(LogicalOperatorType::LOGICAL_PROJECTION), expressions_(std::move(expressions)) {}
+        explicit LogicalProjection() :
+        LogicalOperator(LogicalOperatorType::LOGICAL_PROJECTION) {}
         ~LogicalProjection() override = default;
 
         auto to_string() -> std::string override {

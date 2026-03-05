@@ -1,4 +1,5 @@
 add_subdirectory(logical)
+add_subdirectory(physical)
 
 add_library(yoursql_planner OBJECT planner.cpp)
 

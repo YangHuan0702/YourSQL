@@ -4,9 +4,9 @@
 #pragma once
 #include "physical_operator.h"
 #include "common/type.h"
+#include "storage/page/tuple.h"
 
 namespace YourSQL {
-
 
     class PhysicalSeqScan : public PhysicalOperator {
     public:
@@ -21,9 +21,9 @@ namespace YourSQL {
 
         auto Close() -> void override;
 
+        std::vector<Tuple> rows_;
         entry_id table_id_;
         uint64_t cursor_;
-
     };
 
 }

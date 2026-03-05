@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "bound_statement.h"
-#include "catalog/table_entry.h"
+#include "binder/bound_table_ref_expression.h"
 
 namespace YourSQL {
 
@@ -18,7 +18,7 @@ namespace YourSQL {
             return "BoundSelectStatement";
         }
 
-        std::vector<std::unique_ptr<BoundColumnRefExpression>> select_;
+        std::vector<std::unique_ptr<BoundExpression>> select_;
         std::unique_ptr<BoundTableRefExpression> table_;
         std::unique_ptr<BoundExpression> where_expr_;
     };
