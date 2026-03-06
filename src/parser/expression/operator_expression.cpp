@@ -9,18 +9,6 @@
 using namespace YourSQL;
 
 
-auto Transformer::transformAndOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
-    auto left = transformOperator(expr->expr,table_name);
-    auto right = transformOperator(expr->expr2,table_name);
-    return std::make_unique<BinaryExpression>(std::move(left),std::move(right),BinaryOp::AND);
-}
-
-auto Transformer::transformOrOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
-    auto left = transformOperator(expr->expr,table_name);
-    auto right = transformOperator(expr->expr2,table_name);
-  return std::make_unique<BinaryExpression>(std::move(left),std::move(right),BinaryOp::OR);
-}
-
 auto Transformer::transformOperatorType(hsql::OperatorType type) -> BinaryOp {
     switch (type) {
         case hsql::OperatorType::kOpPlus: return BinaryOp::ADD;
@@ -45,25 +33,13 @@ auto Transformer::transformOperatorType(hsql::OperatorType type) -> BinaryOp {
 }
 
 
-auto Transformer::transformBinaryOperator(hsql::Expr *expr, const std::string &table_name) -> std::unique_ptr<BaseExpression> {
-    auto left = transformOperator(expr->expr,table_name);
-    auto right = transformOperator(expr->expr2,table_name);
-    return std::make_unique<BinaryExpression>(std::move(left),std::move(right),transformOperatorType(expr->opType));
-}
-
-
-auto Transformer::transformUnaryOperator(hsql::Expr *expr, const std::string &table_name) -> std::unique_ptr<BaseExpression> {
-    return nullptr;
-}
-
-
-auto Transformer::transformOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression> {
-    // TODO: 从新调整
+auto Transformer::transformBinaryOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
     switch (expr->opType) {
+        case hsql::kOpMinus:
+        case hsql::kOpAsterisk:
+        case hsql::kOpSlash:
         case hsql::kOpOr:
-            return transformOrOperator(expr,table_name);
         case hsql::kOpAnd:
-            return transformAndOperator(expr,table_name);
         case hsql::kOpLike:
         case hsql::kOpNotLike:
         case hsql::kOpIn:
@@ -74,9 +50,65 @@ auto Transformer::transformOperator(hsql::Expr *expr,const std::string& table_na
         case hsql::kOpEquals:
         case hsql::kOpNotEquals:
         case hsql::kOpNot:
-            return transformBinaryOperator(expr,table_name);
+        case hsql::kOpPlus: {
+            auto left = transformWhere(expr->expr);
+            auto right = transformWhere(expr->expr2);
+            return std::make_unique<BinaryExpression>(std::move(left),std::move(right),transformOperatorType(expr->opType));
+        }
+        default: throw std::invalid_argument("[Transform]Invalid Unary Operator");
+    }
+}
+
+
+auto Transformer::transformUnaryOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
+    switch (expr->opType) {
+        case hsql::kOpMinus:
+        case hsql::kOpAsterisk:
+        case hsql::kOpSlash:
+        case hsql::kOpOr:
+        case hsql::kOpAnd:
+        case hsql::kOpLike:
+        case hsql::kOpNotLike:
+        case hsql::kOpIn:
+        case hsql::kOpLess:
+        case hsql::kOpLessEq :
+        case hsql::kOpGreater:
+        case hsql::kOpGreaterEq:
+        case hsql::kOpEquals:
+        case hsql::kOpNotEquals:
+        case hsql::kOpNot:
+        case hsql::kOpPlus: {
+            auto left = transformWhere(expr);
+            auto right = transformWhere(expr);
+            return std::make_unique<BinaryExpression>(std::move(left),std::move(right),transformOperatorType(expr->opType));
+        }
+        default: throw std::invalid_argument("[Transform]Invalid Unary Operator");
+    }
+}
+
+
+auto Transformer::transformOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression> {
+    switch (expr->opType) {
+        case hsql::kOpConcat:
+        case hsql::kOpPlus:
+        case hsql::kOpMinus:
+        case hsql::kOpAsterisk:
+        case hsql::kOpSlash:
+        case hsql::kOpOr:
+        case hsql::kOpAnd:
+        case hsql::kOpLike:
+        case hsql::kOpNotLike:
+        case hsql::kOpIn:
+        case hsql::kOpLess:
+        case hsql::kOpLessEq :
+        case hsql::kOpGreater:
+        case hsql::kOpGreaterEq:
+        case hsql::kOpEquals:
+        case hsql::kOpNotEquals:
+        case hsql::kOpNot:
+            return transformBinaryOperator(expr);
         case hsql::kOpIsNull:
-            return transformUnaryOperator(expr,table_name);
+            return transformUnaryOperator(expr);
         default:
             throw std::runtime_error("don`t know the opType");
     }

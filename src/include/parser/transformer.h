@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "SQLParserResult.h"
+#include "common/types/column_types.h"
 #include "common/types/plan_operator_types.h"
 #include "expression/select_expression.h"
 #include "sql/CreateStatement.h"
@@ -20,23 +21,34 @@ namespace YourSQL {
 
         auto transformStatement(hsql::SQLParserResult &sqlParserResult,
                                 std::vector<std::unique_ptr<BaseStatement> > &targetStatements) -> bool;
+
     private:
         auto transformSelect(hsql::SelectStatement *sqlStatement) -> std::unique_ptr<SelectStatement>;
-        auto transformWhere(hsql::Expr *expr,std::unique_ptr<YourTable> &table) -> std::unique_ptr<BaseExpression>;
+
+        auto transformWhere(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
         auto transformTableRef(hsql::TableRef *table_ref) -> std::unique_ptr<YourTable>;
 
-        auto transformOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
+        auto transformOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
         auto transformStatement(const hsql::SQLStatement *sql_statement) -> std::unique_ptr<BaseStatement>;
 
-        auto transformLikeExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
-        auto transformInExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
-        auto transformIsNullOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
-        auto transformLogicExpr(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
-        auto transformOrOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
-        auto transformAndOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
-        auto transformBinaryOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
-        auto transformUnaryOperator(hsql::Expr *expr,const std::string& table_name) -> std::unique_ptr<BaseExpression>;
-        static auto transformOperatorType(hsql::OperatorType type) -> BinaryOp;
+        auto transformColumnExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
 
+        auto transformConstExpr(ColumnTypes type,Value value) -> std::unique_ptr<BaseExpression>;
+
+        auto transformLikeExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
+        auto transformInExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
+        auto transformIsNullOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
+        auto transformLogicExpr(hsql::Expr *expr, const std::string &table_name) -> std::unique_ptr<BaseExpression>;
+
+        auto transformBinaryOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
+        auto transformUnaryOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
+
+        static auto transformOperatorType(hsql::OperatorType type) -> BinaryOp;
     };
 }

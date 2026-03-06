@@ -28,7 +28,7 @@ auto Binder::BoundSelectStatement(std::unique_ptr<SelectStatement> parser_statem
     ans->table_ = BoundTableRefExpression(parser_statement->table_->table_name_);
 
     // where
-    ans->where_expr_ = BoundCompExpression(parser_statement->whereExpression);
+    ans->where_expr_ = BoundCompExpression(parser_statement->whereExpression,ans->table_);
 
     return ans;
 }

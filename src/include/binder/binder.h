@@ -25,15 +25,13 @@ namespace YourSQL {
         auto BoundColumnRefExpression(std::string &table_name, std::string &column_name) -> std::unique_ptr<BoundColumnRefExpression>;
         auto BoundTableRefExpression(std::string &table_name) -> std::unique_ptr<BoundTableRefExpression>;
 
-        auto BoundCompExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
-        auto BoundOrExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
-        auto BoundAndExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
+        auto BoundCompExpression(std::unique_ptr<BaseExpression> &parser_where_expression,std::unique_ptr<class BoundTableRefExpression> &table) -> std::unique_ptr<BoundExpression>;
         auto BoundLikeExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
         auto BoundInExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
-        auto BoundBinaryExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
+        auto BoundBinaryExpression(std::unique_ptr<BaseExpression> &parser_where_expression,std::unique_ptr<class BoundTableRefExpression> &table) -> std::unique_ptr<BoundExpression>;
         auto BoundIsNullExpression(std::unique_ptr<BaseExpression> &parser_where_expression) -> std::unique_ptr<BoundExpression>;
-        static auto BoundConstExpression(Value &value) -> std::unique_ptr<BoundExpression> {
-            return std::make_unique<YourSQL::BoundConstExpression>(value);
+        static auto BoundConstExpression(Value &value,ColumnTypes type_) -> std::unique_ptr<BoundExpression> {
+            return std::make_unique<YourSQL::BoundConstExpression>(value,type_);
         }
         std::shared_ptr<Catalog> catalog_;
     };

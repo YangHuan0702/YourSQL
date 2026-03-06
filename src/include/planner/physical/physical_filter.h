@@ -3,6 +3,7 @@
 //
 #pragma once
 #include "physical_operator.h"
+#include "expression/physical_expression.h"
 
 namespace YourSQL {
 
@@ -19,7 +20,7 @@ namespace YourSQL {
 
         auto Close() -> void override;
 
-        std::vector<std::unique_ptr<PhysicalExpression>> expressions_;
+        std::vector<std::unique_ptr<PhysicalExpression>> expressions_{};
 
     };
 
