@@ -18,10 +18,6 @@ namespace YourSQL {
 
         PhysicalOperatorTypes type_;
         std::vector<std::unique_ptr<PhysicalOperator>> children_;
-
-        virtual auto Open() -> void = 0;
-        virtual auto Next() -> bool = 0;
-        virtual auto Close() -> void = 0;
     };
 
 }

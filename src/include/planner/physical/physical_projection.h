@@ -13,13 +13,9 @@ namespace YourSQL {
 
         ~PhysicalProjection() override = default;
 
-        auto to_string() -> std::string override;
-
-        auto Open() -> void override;
-
-        auto Next() -> bool override;
-
-        auto Close() -> void override;
+        auto to_string() -> std::string override {
+            return "";
+        }
 
         std::vector<std::unique_ptr<PhysicalExpression> > columns_;
     };

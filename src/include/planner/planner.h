@@ -9,10 +9,7 @@
 #include "binder/bound_unary_expression.h"
 #include "binder/bound_const_expression.h"
 #include "binder/statement/bound_select_statement.h"
-#include "logical/logical_filter.h"
 #include "logical/logical_operator.h"
-#include "logical/logical_projection.h"
-#include "logical/logical_seq_scan.h"
 #include "physical/physical_operator.h"
 #include "physical/expression/physical_expression.h"
 

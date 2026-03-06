@@ -16,6 +16,7 @@ namespace YourSQL {
 
     class Tuple {
     public:
+        Tuple() = default;
         explicit Tuple(char *data, const Schema &schema) : schema_(schema),data_(data), tuple_size_(schema.tuple_size_) {
         }
         ~Tuple() = default;
