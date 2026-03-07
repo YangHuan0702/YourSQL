@@ -41,6 +41,10 @@ auto BufferManager::FetchPage(page_id_t page_id) -> Page * {
             int frame = free_pages_.back();
             free_pages_.pop_back();
 
+            if (frames_[frame].is_dirty_) {
+                disk_manager_->Write(&frames_[frame]);
+            }
+            disk_manager_->Read(page_id, &frames_[frame]);
             lru_manager_->Pin(frame);
             ans = &frames_[frame];
             buffer_pages_[page_id] = frame;

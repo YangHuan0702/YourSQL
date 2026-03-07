@@ -9,7 +9,7 @@ auto ExecutorProjection::Close() -> void {
 
 }
 
-auto ExecutorProjection::Next() -> bool {
+auto ExecutorProjection::Next(Tuple *tuple) -> bool {
     return false;
 }
 

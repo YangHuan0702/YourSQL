@@ -8,8 +8,10 @@ using namespace YourSQL;
 
 TablePage::TablePage(Page *page) : page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
     char *data = page->data_;
-    memcpy(&header_.version, data, sizeof(uint16_t));
+    memcpy(&header_.version, data, NUM_ROWS_OFFSET);
     memcpy(&header_.num_rows,data+NUM_ROWS_OFFSET,sizeof(uint32_t));
+    memcpy(&header_.page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t),sizeof(uint64_t));
+    memcpy(&header_.next_page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(uint64_t),sizeof(uint64_t));
 
     uint32_t slot_count_size = SLOT_SIZE * header_.num_rows;
     uint32_t tuple_count_size = 0;

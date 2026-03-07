@@ -17,7 +17,7 @@ namespace YourSQL {
 
         auto Close() -> void override;
 
-        auto Next() -> bool override;
+        auto Next(Tuple *tuple) -> bool override;
 
         std::vector<std::unique_ptr<PhysicalExpression>> expressions_;
     };

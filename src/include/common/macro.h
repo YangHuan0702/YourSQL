@@ -12,8 +12,6 @@ namespace YourSQL {
 #define MAX_OPEN_FILES 512
 
 
-
-
 #define DATA_PATH "/data/YourSQL"
 #define DATA_FILE_NAME "ydb.s"
 

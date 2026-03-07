@@ -45,6 +45,7 @@ namespace YourSQL {
 
         bool is_dirty_{false};
         page_id_t id_{};
+        page_id_t next_page_id_{};
         char *data_;
     };
 }

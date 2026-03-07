@@ -13,11 +13,13 @@ namespace YourSQL {
 
 #define NUM_ROWS_OFFSET sizeof(uint16_t)
 #define SLOT_SIZE (sizeof(uint16_t) * 2 + 1)
-#define HEADER_SIZE (NUM_ROWS_OFFSET + sizeof(uint32_t))
+#define HEADER_SIZE (NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(uint64_t) * 2)
 
     struct TableHeader {
         uint16_t version;
         uint32_t num_rows;
+        uint64_t page_id;
+        uint64_t next_page_id;
     };
 
     struct Slot {

@@ -9,7 +9,7 @@ auto ExecutorFilter::Close() -> void {
 
 }
 
-auto ExecutorFilter::Next() -> bool {
+auto ExecutorFilter::Next(Tuple *tuple) -> bool {
     return false;
 }
 

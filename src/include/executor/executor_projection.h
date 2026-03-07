@@ -17,7 +17,7 @@ namespace YourSQL {
 
         auto Close() -> void override;
 
-        auto Next() -> bool override;
+        auto Next(Tuple *tuple) -> bool override;
 
         std::unique_ptr<PhysicalProjection> projection_;
     };
