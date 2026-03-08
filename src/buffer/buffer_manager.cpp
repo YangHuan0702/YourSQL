@@ -34,12 +34,6 @@ auto BufferManager::Release(page_id_t page_id) -> void {
     }
     int frame_id = buffer_pages_[page_id];
     lru_manager_->UnPin(frame_id);
-
-    int count = lru_manager_->GetPinCount(frame_id);
-    if (count == 0) {
-        free_pages_.push_back(frame_id);
-        buffer_pages_.erase(page_id);
-    }
 }
 
 

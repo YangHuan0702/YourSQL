@@ -4,7 +4,6 @@
 #pragma once
 #include <memory>
 
-#include "catalog/table_entry.h"
 #include "storage/page/table_page.h"
 #include "buffer/buffer_manager.h"
 #include "buffer/meta_page.h"
@@ -19,8 +18,8 @@ namespace YourSQL {
         // 正常构造函数，用于构造 begin 迭代器
         explicit TableIterator(std::shared_ptr<BufferManager> buffer_manager,
                               std::shared_ptr<MetaPage> meta_page,
-                              const std::string &table_name,
-                              const Schema &schema);
+                              std::string table_name,
+                              Schema schema);
 
         ~TableIterator() = default;
 
@@ -44,7 +43,7 @@ namespace YourSQL {
         std::shared_ptr<BufferManager> buffer_manager_;
         std::shared_ptr<MetaPage> meta_page_;
         std::string table_name_;
-        Schema schema_;
+        Schema schema_{};
 
         page_id_t current_page_id_{0};
         uint32_t current_row_index_{0};

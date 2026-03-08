@@ -7,6 +7,9 @@
 #include "binder/bound_column_ref_expression.h"
 #include "binder/bound_unary_expression.h"
 #include "binder/bound_const_expression.h"
+#include "planner/logical/logical_filter.h"
+#include "planner/logical/logical_projection.h"
+#include "planner/logical/logical_seq_scan.h"
 #include "planner/physical/physical_filter.h"
 #include "planner/physical/physical_projection.h"
 #include "planner/physical/physical_seq_scan.h"
@@ -26,7 +29,7 @@ auto Planner::CreateLogicalPlan(std::unique_ptr<BoundStatement> statement) -> st
 }
 
 auto Planner::CreatePhysicalPlan(
-    std::unique_ptr<LogicalOperator> logical_operator) -> std::unique_ptr<PhysicalOperator> {
+    const std::unique_ptr<LogicalOperator> &logical_operator) -> std::unique_ptr<PhysicalOperator> {
     switch (logical_operator->type_) {
         case LogicalOperatorType::LOGICAL_GET: {
             auto logical_op = dynamic_cast<LogicalSeqScan *>(logical_operator.get());

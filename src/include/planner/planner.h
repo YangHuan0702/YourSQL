@@ -25,16 +25,16 @@ namespace YourSQL {
 
         auto CreateLogicalPlan(std::unique_ptr<BoundStatement> statement) -> std::unique_ptr<LogicalOperator>;
 
-        auto CreatePhysicalPlan(std::unique_ptr<LogicalOperator> ) -> std::unique_ptr<PhysicalOperator>;
+        auto CreatePhysicalPlan(const std::unique_ptr<LogicalOperator> &) -> std::unique_ptr<PhysicalOperator>;
 
     private:
         auto PhysicalTransformerGet(std::unique_ptr<LogicalOperator> &) -> std::unique_ptr<PhysicalOperator>;
         auto PhysicalTransformerFilter(std::unique_ptr<LogicalOperator> &) -> std::unique_ptr<PhysicalOperator>;
 
         auto TransformPhyBinaryExpr(BoundBinaryExpression *) -> std::unique_ptr<PhysicalExpression>;
-        auto TransformPhyUnaryExpr(BoundUnaryExpression *) -> std::unique_ptr<PhysicalExpression>;
-        auto TransformPhyColumnRefExpr(BoundColumnRefExpression *) -> std::unique_ptr<PhysicalExpression>;
-        auto TransformPhyConstExpr(BoundConstExpression *) -> std::unique_ptr<PhysicalExpression>;
+        static auto TransformPhyUnaryExpr(BoundUnaryExpression *) -> std::unique_ptr<PhysicalExpression>;
+        static auto TransformPhyColumnRefExpr(BoundColumnRefExpression *) -> std::unique_ptr<PhysicalExpression>;
+        static auto TransformPhyConstExpr(BoundConstExpression *) -> std::unique_ptr<PhysicalExpression>;
 
         auto TransformExpression(BoundExpression *) -> std::unique_ptr<PhysicalExpression>;
 

@@ -2,6 +2,8 @@
 // Created by huan.yang on 2026-03-07.
 //
 #include "buffer/table_iterator.h"
+
+#include <utility>
 #include "common/exception.h"
 #include "storage/page/row.h"
 
@@ -9,12 +11,12 @@ using namespace YourSQL;
 
 TableIterator::TableIterator(std::shared_ptr<BufferManager> buffer_manager,
                              std::shared_ptr<MetaPage> meta_page,
-                             const std::string &table_name,
-                             const Schema &schema)
+                             std::string table_name,
+                             Schema schema)
     : buffer_manager_(std::move(buffer_manager)),
       meta_page_(std::move(meta_page)),
-      table_name_(table_name),
-      schema_(schema) {
+      table_name_(std::move(table_name)),
+      schema_(std::move(schema)) {
     // 获取表的第一个页面 ID
     current_page_id_ = meta_page_->GetFirstPageId(table_name_);
 
