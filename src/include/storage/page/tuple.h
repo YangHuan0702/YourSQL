@@ -23,6 +23,6 @@ namespace YourSQL {
 
         Schema schema_;
         char *data_;
-        uint16_t tuple_size_;
+        uint16_t tuple_size_{};
     };
 }

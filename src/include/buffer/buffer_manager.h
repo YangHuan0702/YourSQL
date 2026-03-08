@@ -25,7 +25,9 @@ namespace YourSQL {
         }
 
         auto Release(Page *page) -> void;
+        auto Release(page_id_t page_id) -> void;
         auto FetchPage(page_id_t page_id) -> Page*;
+        auto Flush(page_id_t page_id) -> void;
 
     private:
         auto ReadPage(page_id_t,Page *page) -> bool;

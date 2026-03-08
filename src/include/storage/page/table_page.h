@@ -40,6 +40,9 @@ namespace YourSQL {
         auto updateTuple(const Tuple &tuple,const RID &rid) -> void;
         auto DeleteTuple(const RID &rid) -> void;
         auto GetTuple(const RID &rid, Tuple *tuple);
+        auto GetPage() const -> Page* {
+            return page_;
+        }
 
     private:
 

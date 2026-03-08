@@ -8,9 +8,9 @@ namespace YourSQL {
 
     typedef size_t entry_id;
 
-    typedef uint64_t page_id_t;
+    typedef entry_id page_id_t;
 
-    typedef uint32_t row_id_t;
+    typedef entry_id row_id_t;
 
 }
 

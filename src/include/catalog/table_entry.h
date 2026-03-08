@@ -8,6 +8,7 @@
 #include <mutex>
 #include <memory>
 
+#include "buffer/table_iterator.h"
 #include "catalog/base_entry.h"
 #include "catalog/column_entry.h"
 #include "catalog/index_entry.h"
@@ -28,6 +29,11 @@ namespace YourSQL {
             column_name_idx[column_entry->name_] = column_entry->id_;
             columns_[column_entry->id_] = std::move(column_entry);
         }
+
+        // 迭代器支持
+        auto begin(std::shared_ptr<BufferManager> buffer_manager,
+                   std::shared_ptr<MetaPage> meta_page) -> TableIterator;
+        auto end() -> TableIterator;
 
         std::unique_ptr<IndexEntry> index_entry;
         std::unordered_map<std::string,entry_id> column_name_idx;

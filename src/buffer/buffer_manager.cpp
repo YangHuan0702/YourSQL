@@ -13,19 +13,39 @@ auto BufferManager::ReadPage(page_id_t page_id, Page *page) -> bool {
     return true;
 }
 
-
-auto BufferManager::Release(Page *page) -> void {
-    if (!page) return;
-
+auto BufferManager::Flush(page_id_t page_id) -> void {
     std::lock_guard lock(mutex_);
-    int frame_id = buffer_pages_[page->id_];
+    if (buffer_pages_.find(page_id) == buffer_pages_.end()) {
+        throw std::runtime_error("BufferManager::Flush: Page not found");
+    }
+    auto page = &frames_[buffer_pages_[page_id]];
+    if (page->is_dirty_) {
+        disk_manager_->Write(page);
+        page->is_dirty_ = false;
+    }
+}
+
+
+
+auto BufferManager::Release(page_id_t page_id) -> void {
+    std::lock_guard lock(mutex_);
+    if (buffer_pages_.find(page_id) == buffer_pages_.end()) {
+        throw std::runtime_error("BufferManager::Release: Page not found");
+    }
+    int frame_id = buffer_pages_[page_id];
     lru_manager_->UnPin(frame_id);
 
     int count = lru_manager_->GetPinCount(frame_id);
     if (count == 0) {
         free_pages_.push_back(frame_id);
-        buffer_pages_.erase(page->id_);
+        buffer_pages_.erase(page_id);
     }
+}
+
+
+auto BufferManager::Release(Page *page) -> void {
+    if (!page) return;
+    Release(page->id_);
 }
 
 
