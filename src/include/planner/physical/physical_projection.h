@@ -17,6 +17,6 @@ namespace YourSQL {
             return "";
         }
 
-        std::vector<std::unique_ptr<PhysicalExpression> > columns_;
+        std::vector<entry_id> columns_;
     };
 }

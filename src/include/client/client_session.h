@@ -1,8 +1,14 @@
 //
 // Created by 杨欢 on 2026/2/14.
 //
+#pragma once
 
-#ifndef YOURSQL_CLIENT_SESSION_H
-#define YOURSQL_CLIENT_SESSION_H
+namespace YourSQL {
 
-#endif //YOURSQL_CLIENT_SESSION_H
+    class ClientSession {
+
+
+
+    };
+
+}

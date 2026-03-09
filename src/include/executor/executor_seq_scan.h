@@ -3,13 +3,17 @@
 //
 #pragma once
 #include "executor.h"
+#include "buffer/table_iterator.h"
 #include "storage/page/tuple.h"
 
 namespace YourSQL {
     class ExecutorSeqScan : public Executor {
     public:
-        explicit ExecutorSeqScan(std::shared_ptr<ExecutorContext> context,entry_id table_id) :
-        Executor(context,PhysicalOperatorTypes::PHYSICAL_SEQ_SCAN),table_id_(table_id) {}
+        explicit
+        ExecutorSeqScan(std::shared_ptr<ExecutorContext> context, std::string table_name) : Executor(context,
+                PhysicalOperatorTypes::PHYSICAL_SEQ_SCAN), table_name_(table_name), iterator_(nullptr) {
+        }
+
         ~ExecutorSeqScan() override = default;
 
         auto Open() -> void override;
@@ -18,8 +22,8 @@ namespace YourSQL {
 
         auto Next(Tuple *tuple) -> bool override;
 
-        entry_id table_id_;
+        std::string table_name_;
         size_t cursor_{};
-
+        TableIterator *iterator_;
     };
 }

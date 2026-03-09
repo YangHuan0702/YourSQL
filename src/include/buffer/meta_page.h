@@ -16,6 +16,7 @@ namespace YourSQL {
         page_id_t first_page_id;
         std::string table_name_;
         size_t num_rows_;
+        entry_id table_id_;
     };
 
 
@@ -28,11 +29,13 @@ namespace YourSQL {
         auto Init(const std::shared_ptr<BufferManager> &buffer_manager) -> void;
 
         auto GetFirstPageId(const std::string &tale_name) -> page_id_t;
+        auto GetFirstPageId(entry_id table_id) -> page_id_t;
 
         size_t version_{};
         size_t table_size_{};
 
-        std::unordered_map<std::string, page_id_t> table_;
+        std::unordered_map<std::string, page_id_t> name_tables_;
+        std::unordered_map<entry_id,page_id_t> id_tables_;
         std::unordered_map<std::string, MetaItem> items_{};
     };
 }

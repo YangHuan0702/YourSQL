@@ -37,6 +37,8 @@ namespace YourSQL {
             return !(*this == other);
         }
 
+        auto IsEnd() const -> bool { return is_end_; }
+
     private:
         auto LoadPage() -> void;
 

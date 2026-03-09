@@ -29,22 +29,35 @@ auto MetaPage::Init(const std::shared_ptr<BufferManager>& buffer_manager) -> voi
         memcpy(&rows, meta_page->data_ + offset, sizeof(size_t));
         offset += sizeof(size_t);
 
+        entry_id table_id = 0;
+        memcpy(&table_id, meta_page->data_ + offset, sizeof(entry_id));
+        offset += sizeof(entry_id);
+
         MetaItem item;
         item.table_name_ = table_name;
         item.first_page_id = first_id;
         item.num_rows_ = rows;
+        item.table_id_ = table_id;
 
-        table_[table_name] = first_id;
+        name_tables_[table_name] = first_id;
+        id_tables_[table_id] = first_id;
         items_[table_name] = item;
     }
 }
 
 
 auto MetaPage::GetFirstPageId(const std::string &table_name) -> page_id_t {
-    if (table_.find(table_name) == table_.end()) {
-        throw std::runtime_error("MetaPage does not exist");
+    if (name_tables_.find(table_name) == name_tables_.end()) {
+        throw std::runtime_error("MetaPage::GetFirstPageId for tableName does not exist");
     }
-    return table_[table_name];
+    return name_tables_[table_name];
+}
+
+auto MetaPage::GetFirstPageId(entry_id table_id) -> page_id_t {
+    if (id_tables_.find(table_id) == id_tables_.end()) {
+        throw std::runtime_error("MetaPage::GetFirstPageId for tableId does not exist");
+    }
+    return id_tables_[table_id];
 }
 
 

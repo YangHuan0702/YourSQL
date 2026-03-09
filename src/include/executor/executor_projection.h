@@ -6,11 +6,14 @@
 #include "planner/physical/physical_projection.h"
 
 namespace YourSQL {
-
     class ExecutorProjection final : public Executor {
     public:
         explicit ExecutorProjection(std::shared_ptr<ExecutorContext> context,
-            std::unique_ptr<PhysicalProjection> projection) :Executor(context,PhysicalOperatorTypes::PHYSICAL_PROJECTION), projection_(std::move(projection)) {}
+                                    const std::vector<entry_id> &column_ids) : Executor(context,
+                                                                            PhysicalOperatorTypes::PHYSICAL_PROJECTION),
+                                                                        column_ids_(column_ids) {
+        }
+
         ~ExecutorProjection() override = default;
 
         auto Open() -> void override;
@@ -19,7 +22,6 @@ namespace YourSQL {
 
         auto Next(Tuple *tuple) -> bool override;
 
-        std::unique_ptr<PhysicalProjection> projection_;
+        std::vector<entry_id> column_ids_;
     };
-
 }

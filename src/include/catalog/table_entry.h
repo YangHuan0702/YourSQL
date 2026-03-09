@@ -25,9 +25,9 @@ namespace YourSQL {
 
         std::mutex lock;
 
-        auto AddColumn(std::unique_ptr<ColumnEntry> column_entry) -> void {
-            column_name_idx[column_entry->name_] = column_entry->id_;
-            columns_[column_entry->id_] = std::move(column_entry);
+        auto AddColumn(ColumnEntry column_entry) -> void {
+            column_name_idx[column_entry.name_] = column_entry.id_;
+            columns_.emplace(column_entry.id_,column_entry);
         }
 
         // 迭代器支持
@@ -37,7 +37,7 @@ namespace YourSQL {
 
         std::unique_ptr<IndexEntry> index_entry;
         std::unordered_map<std::string,entry_id> column_name_idx;
-        std::unordered_map<entry_id,std::unique_ptr<ColumnEntry>> columns_;
+        std::unordered_map<entry_id,ColumnEntry> columns_;
     };
 
 }

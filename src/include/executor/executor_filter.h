@@ -9,8 +9,8 @@ namespace YourSQL {
 
     class ExecutorFilter : public Executor {
     public:
-        explicit ExecutorFilter(std::shared_ptr<ExecutorContext> context,std::vector<std::unique_ptr<PhysicalExpression>> &expressions)
-        : Executor(context,PhysicalOperatorTypes::PHYSICAL_FILTER),expressions_(std::move(expressions)) {}
+        explicit ExecutorFilter(std::shared_ptr<ExecutorContext> context, std::unique_ptr<PhysicalExpression> expression)
+        : Executor(context,PhysicalOperatorTypes::PHYSICAL_FILTER),expression_(std::move(expression)) {}
         ~ExecutorFilter() override = default;
 
         auto Open() -> void override;
@@ -19,7 +19,7 @@ namespace YourSQL {
 
         auto Next(Tuple *tuple) -> bool override;
 
-        std::vector<std::unique_ptr<PhysicalExpression>> expressions_;
+        std::unique_ptr<PhysicalExpression> expression_;
     };
 
 }
