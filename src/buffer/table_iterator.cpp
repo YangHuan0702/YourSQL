@@ -57,17 +57,18 @@ auto TableIterator::operator++() -> TableIterator& {
     if (current_row_index_ >= current_page_num_rows_) {
         // 获取下一页的 page_id
         page_id_t next_page_id = current_table_page_->GetPage()->next_page_id_;
-
+        buffer_manager_->Release(current_page_id_);
         if (next_page_id == 0) {
             // 没有下一页了，到达末尾
             is_end_ = true;
         } else {
             // 移动到下一页
-            buffer_manager_->Release(current_page_id_);
             current_page_id_ = next_page_id;
             LoadPage();
             current_row_index_ = 0;
         }
+    } else {
+        buffer_manager_->TouchPage(current_page_id_);
     }
 
     return *this;

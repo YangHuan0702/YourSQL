@@ -33,6 +33,16 @@ namespace YourSQL {
             }
         }
 
+        // 标记页面被访问，如果页面在 LRU 列表中，将其移到头部
+        auto Touch(int frame) -> void {
+            std::unique_lock<std::mutex> lock(mutex_);
+            if (map_.find(frame) != map_.end()) {
+                list_.erase(map_[frame]);
+                list_.push_front(frame);
+                map_[frame] = list_.begin();
+            }
+        }
+
         auto GetPinCount(int frame) -> int {
             return pin_count_[frame];
         }

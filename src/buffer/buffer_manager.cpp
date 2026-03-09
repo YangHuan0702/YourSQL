@@ -80,3 +80,12 @@ auto BufferManager::FetchPage(page_id_t page_id) -> Page * {
     ans->SetPageId(page_id);
     return ans;
 }
+
+auto BufferManager::TouchPage(page_id_t page_id) -> void {
+    std::lock_guard lock(mutex_);
+    if (buffer_pages_.find(page_id) == buffer_pages_.end()) {
+       throw std::runtime_error("BufferManager::TouchPage: Page not found");
+    }
+    int frame_id = buffer_pages_[page_id];
+    lru_manager_->Touch(frame_id);
+}

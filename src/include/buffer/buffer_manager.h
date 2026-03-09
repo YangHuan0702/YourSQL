@@ -16,6 +16,7 @@ namespace YourSQL {
     public:
         explicit BufferManager(std::unique_ptr<DiskManger> disk_manger) : disk_manager_(std::move(disk_manger)),max_pages_(BUFFER_MAX_PAGE) {
             frames_ = new Page[max_pages_];
+            lru_manager_ = std::make_unique<LRUManager>();
             for (int i = 0; i < max_pages_; i++) {
                 free_pages_.push_back(i);
             }
@@ -28,6 +29,9 @@ namespace YourSQL {
         auto Release(page_id_t page_id) -> void;
         auto FetchPage(page_id_t page_id) -> Page*;
         auto Flush(page_id_t page_id) -> void;
+
+        // 标记页面被访问，将页面移到 LRU 列表头部（如果页面未被 Pin）
+        auto TouchPage(page_id_t page_id) -> void;
 
     private:
         auto ReadPage(page_id_t,Page *page) -> bool;
