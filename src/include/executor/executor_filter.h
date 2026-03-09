@@ -2,6 +2,8 @@
 // Created by huan.yang on 2026-03-06.
 //
 #pragma once
+#include <utility>
+
 #include "executor.h"
 #include "planner/physical/expression/physical_expression.h"
 
@@ -10,7 +12,7 @@ namespace YourSQL {
     class ExecutorFilter : public Executor {
     public:
         explicit ExecutorFilter(std::shared_ptr<ExecutorContext> context, std::unique_ptr<PhysicalExpression> expression)
-        : Executor(context,PhysicalOperatorTypes::PHYSICAL_FILTER),expression_(std::move(expression)) {}
+        : Executor(std::move(context),PhysicalOperatorTypes::PHYSICAL_FILTER),expression_(std::move(expression)) {}
         ~ExecutorFilter() override = default;
 
         auto Open() -> void override;

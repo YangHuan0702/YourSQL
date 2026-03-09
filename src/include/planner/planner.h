@@ -37,7 +37,8 @@ namespace YourSQL {
         static auto TransformPhyColumnRefExpr(BoundColumnRefExpression *) -> std::unique_ptr<PhysicalExpression>;
         static auto TransformPhyConstExpr(BoundConstExpression *) -> std::unique_ptr<PhysicalExpression>;
 
-        auto TransformExpression(BoundExpression *) -> std::unique_ptr<PhysicalExpression>;
+        auto TransformExpression(std::unique_ptr<BoundExpression> &) -> std::unique_ptr<PhysicalExpression>;
+        auto TransformExpression(std::vector<std::unique_ptr<BoundExpression>> &) -> std::unique_ptr<PhysicalExpression>;
 
         auto LogicalSelectPlan(
             std::unique_ptr<BoundSelectStatement> select_statement) -> std::unique_ptr<LogicalOperator>;

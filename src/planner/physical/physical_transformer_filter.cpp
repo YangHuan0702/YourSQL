@@ -11,6 +11,8 @@ auto Planner::PhysicalTransformerFilter(std::unique_ptr<LogicalOperator> &logica
     auto filter_logical_operator = dynamic_cast<LogicalFilter *>(logical_operator.release());
 
     auto r = std::make_unique<PhysicalFilter>();
+
+    r->expressions_ = TransformExpression(filter_logical_operator->expressions_);
     for (auto &operator_ : filter_logical_operator->children_) {
         r->children_.push_back(CreatePhysicalPlan(operator_));
     }

@@ -10,6 +10,7 @@ namespace YourSQL {
     class ExecutorFactory {
     public:
         explicit ExecutorFactory(std::shared_ptr<ExecutorContext> context,entry_id table_id) : context_(context),table_id_(table_id) {}
+
         ~ExecutorFactory() = default;
 
         auto BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_operator) -> std::unique_ptr<Executor>;

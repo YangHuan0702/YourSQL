@@ -16,17 +16,17 @@ using namespace YourSQL;
 auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_operator) -> std::unique_ptr<Executor> {
     switch (physical_operator->type_) {
         case PhysicalOperatorTypes::PHYSICAL_SEQ_SCAN: {
-            auto seq_scan = dynamic_cast<PhysicalSeqScan*>(physical_operator.get());
-            return std::make_unique<ExecutorSeqScan>(context_,context_->catalog_->GetTableName(seq_scan->table_id_));
+            auto seq_scan = dynamic_cast<PhysicalSeqScan *>(physical_operator.get());
+            return std::make_unique<ExecutorSeqScan>(context_, context_->catalog_->GetTableName(seq_scan->table_id_));
         }
         case PhysicalOperatorTypes::PHYSICAL_PROJECTION: {
-            auto projection = dynamic_cast<PhysicalProjection*>(physical_operator.get());
-            return std::make_unique<ExecutorProjection>(context_,projection->columns_);
+            auto projection = dynamic_cast<PhysicalProjection *>(physical_operator.get());
+            return std::make_unique<ExecutorProjection>(context_, projection->columns_);
         }
         case PhysicalOperatorTypes::PHYSICAL_FILTER: {
-            auto filter = dynamic_cast<PhysicalFilter*>(physical_operator.get());
-            auto executor_filter = std::make_unique<ExecutorFilter>(context_,std::move(filter->expressions_));
-            for (auto &operator_ : filter->children_) {
+            auto filter = dynamic_cast<PhysicalFilter *>(physical_operator.get());
+            auto executor_filter = std::make_unique<ExecutorFilter>(context_, std::move(filter->expressions_));
+            for (auto &operator_: filter->children_) {
                 executor_filter->children_.push_back(BuildExecutor(operator_));
             }
             return executor_filter;
