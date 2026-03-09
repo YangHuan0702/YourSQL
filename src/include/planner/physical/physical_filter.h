@@ -16,7 +16,7 @@ namespace YourSQL {
             return "";
         }
 
-        std::vector<std::unique_ptr<PhysicalExpression>> expressions_{};
+        std::unique_ptr<PhysicalExpression> expressions_{};
 
     };
 

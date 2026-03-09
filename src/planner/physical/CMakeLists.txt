@@ -1,3 +1,3 @@
-add_library(yoursql_planner_physical OBJECT physical_transformer_filter.cpp physical_transformer_get.cpp)
+add_library(yoursql_planner_physical OBJECT physical_transformer_filter.cpp physical_transformer_get.cpp physical_transofromer_projection.cpp)
 
 set(ALL_OBJECT_FILES ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:yoursql_planner_physical> PARENT_SCOPE)

@@ -37,18 +37,19 @@ auto Planner::CreatePhysicalPlan(
             return r;
         }
         case LogicalOperatorType::LOGICAL_FILTER: {
-            auto logical_op = dynamic_cast<LogicalFilter *>(logical_operator.get());
+            // auto logical_op = dynamic_cast<LogicalFilter *>(logical_operator.get());
             auto r = std::make_unique<PhysicalFilter>();
-            for (auto &bound_expression : logical_op->expressions_) {
-                r->expressions_.push_back(TransformExpression(bound_expression.get()));
-            }
+            // for (auto &bound_expression : logical_op->expressions_) {
+                // r->expressions_.push_back(TransformExpression(bound_expression.get()));
+            // }
             return r;
         }
         case LogicalOperatorType::LOGICAL_PROJECTION : {
             auto logical_op = dynamic_cast<LogicalProjection *>(logical_operator.get());
             auto r = std::make_unique<PhysicalProjection>();
             for (auto &bound_expression : logical_op->expressions_) {
-                r->columns_.push_back(TransformPhyColumnRefExpr(dynamic_cast<BoundColumnRefExpression *>(bound_expression.get())));
+                auto expr = dynamic_cast<BoundColumnRefExpression *>(bound_expression.get());
+                r->columns_.push_back(expr->column_id_);
             }
             return r;
         }

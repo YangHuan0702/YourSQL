@@ -19,7 +19,7 @@ auto TableEntry::begin(std::shared_ptr<BufferManager> buffer_manager,
     // 构建 Schema
     Schema schema;
     for (auto &pair : columns_) {
-        schema.columns_.push_back(*pair.second);
+        schema.columns_.push_back(pair.second);
     }
 
     return TableIterator(std::move(buffer_manager), std::move(meta_page), name_, schema);

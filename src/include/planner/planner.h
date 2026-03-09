@@ -30,6 +30,7 @@ namespace YourSQL {
     private:
         auto PhysicalTransformerGet(std::unique_ptr<LogicalOperator> &) -> std::unique_ptr<PhysicalOperator>;
         auto PhysicalTransformerFilter(std::unique_ptr<LogicalOperator> &) -> std::unique_ptr<PhysicalOperator>;
+        auto PhysicalTransformerProjection(std::unique_ptr<LogicalOperator> &) -> std::unique_ptr<PhysicalOperator>;
 
         auto TransformPhyBinaryExpr(BoundBinaryExpression *) -> std::unique_ptr<PhysicalExpression>;
         static auto TransformPhyUnaryExpr(BoundUnaryExpression *) -> std::unique_ptr<PhysicalExpression>;

@@ -17,21 +17,21 @@ TEST(Binder,BinderSQLTest) {
     auto table = std::make_unique<TableEntry>(IdManager::GetNextEntryId(),table_name);
 
     std::string name = "name";
-    auto column_name = std::make_unique<ColumnEntry>(IdManager::GetNextEntryId(),name,ColumnTypes::VARCHAR);
+    auto column_name = ColumnEntry(IdManager::GetNextEntryId(),name,ColumnTypes::VARCHAR);
 
     std::string age = "age";
-    auto column_age = std::make_unique<ColumnEntry>(IdManager::GetNextEntryId(),age,ColumnTypes::INTEGER);
+    auto column_age = ColumnEntry(IdManager::GetNextEntryId(),age,ColumnTypes::INTEGER);
 
     std::string email = "email";
-    auto column_email = std::make_unique<ColumnEntry>(IdManager::GetNextEntryId(),email,ColumnTypes::VARCHAR);
+    auto column_email = ColumnEntry(IdManager::GetNextEntryId(),email,ColumnTypes::VARCHAR);
 
     std::string del = "del";
-    auto column_del = std::make_unique<ColumnEntry>(IdManager::GetNextEntryId(),del,ColumnTypes::INTEGER);
+    auto column_del = ColumnEntry(IdManager::GetNextEntryId(),del,ColumnTypes::INTEGER);
 
-    table->AddColumn(std::move(column_name));
-    table->AddColumn(std::move(column_age));
-    table->AddColumn(std::move(column_email));
-    table->AddColumn(std::move(column_del));
+    table->AddColumn(column_name);
+    table->AddColumn(column_age);
+    table->AddColumn(column_email);
+    table->AddColumn(column_del);
 
     catalog->AddTable(std::move(table));
 

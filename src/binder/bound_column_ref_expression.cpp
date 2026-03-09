@@ -5,7 +5,7 @@
 
 using namespace YourSQL;
 
-auto Binder::BoundColumnRefExpression(std::string &table_name, std::string &column_name) -> std::unique_ptr<YourSQL::BoundColumnRefExpression> {
+auto Binder::BoundColumnRefExpression(std::string table_name, std::string column_name) -> std::unique_ptr<YourSQL::BoundColumnRefExpression> {
     if (catalog_->table_name_idx_.find(table_name) == catalog_->table_name_idx_.end()) {
         throw std::runtime_error("["+table_name+"] don`t exist in the catalog.");
     }

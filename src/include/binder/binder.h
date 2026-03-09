@@ -22,7 +22,7 @@ namespace YourSQL {
         auto BoundSelectStatement(std::unique_ptr<SelectStatement> parser_statement) -> std::unique_ptr<BoundSelectStatement>;
 
         auto BoundStarExpression(std::string &table_name) -> std::unique_ptr<BoundStarExpression>;
-        auto BoundColumnRefExpression(std::string &table_name, std::string &column_name) -> std::unique_ptr<BoundColumnRefExpression>;
+        auto BoundColumnRefExpression(std::string table_name, std::string column_name) -> std::unique_ptr<BoundColumnRefExpression>;
         auto BoundTableRefExpression(std::string &table_name) -> std::unique_ptr<BoundTableRefExpression>;
 
         auto BoundCompExpression(std::unique_ptr<BaseExpression> &parser_where_expression,std::unique_ptr<class BoundTableRefExpression> &table) -> std::unique_ptr<BoundExpression>;
