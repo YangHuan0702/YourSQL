@@ -9,6 +9,7 @@ using namespace YourSQL;
 
 auto MetaPage::Init(const std::shared_ptr<BufferManager>& buffer_manager) -> void {
     Page *meta_page = buffer_manager->FetchPage(META_PAGE_ID);
+    meta_page_ = meta_page;
     memcpy(&version_,meta_page->data_,sizeof(size_t));
     memcpy(&table_size_,meta_page->data_ + sizeof(size_t),sizeof(size_t));
 
@@ -49,6 +50,9 @@ auto MetaPage::Init(const std::shared_ptr<BufferManager>& buffer_manager) -> voi
         items_[table_id] = item;
     }
 }
+
+
+
 
 
 auto MetaPage::GetFirstPageId(const std::string &table_name) -> page_id_t {

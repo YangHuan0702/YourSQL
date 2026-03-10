@@ -11,7 +11,7 @@ namespace YourSQL {
 
     class Execute {
     public:
-        explicit Execute(std::shared_ptr<ExecutorContext> context,std::shared_ptr<BufferManager> buffer_manager) : context_(context),buffer_manager_(buffer_manager) {}
+        explicit Execute(std::shared_ptr<ExecutorContext> context) : context_(context) {}
         ~Execute() = default;
 
         auto ExecuteQuery(std::unique_ptr<Executor> root) -> void;
@@ -19,7 +19,6 @@ namespace YourSQL {
 
 
         std::shared_ptr<ExecutorContext> context_;
-        std::shared_ptr<BufferManager> buffer_manager_;
     };
 
 }

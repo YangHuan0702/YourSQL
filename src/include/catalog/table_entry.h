@@ -47,6 +47,14 @@ namespace YourSQL {
             return schema;
         }
 
+        auto GetColumnIds() -> std::vector<entry_id> {
+            std::vector<entry_id> ids;
+            for (auto column : columns_) {
+                ids.push_back(column.first);
+            }
+            return ids;
+        }
+
 
         // 迭代器支持
         auto begin(std::shared_ptr<BufferManager> buffer_manager,

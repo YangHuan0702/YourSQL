@@ -35,6 +35,7 @@ namespace YourSQL {
         size_t version_{};
         size_t table_size_{};
 
+        Page *meta_page_{nullptr};
         std::unordered_map<std::string, page_id_t> name_tables_;
         std::unordered_map<entry_id,page_id_t> id_tables_;
         std::unordered_map<entry_id, MetaItem> items_{};

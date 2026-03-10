@@ -3,20 +3,30 @@
 //
 #include "storage/posix_disk_manager.h"
 
+#include <filesystem>
+
 
 #include "common/macro.h"
 
 using namespace YourSQL;
 
-PosixDiskManager::PosixDiskManager() : fs_(std::string(DATA_PATH) + "/" + std::string(DATA_FILE_NAME),
-                                           std::ios::in | std::ios::binary | std::ios::out) {
+PosixDiskManager::PosixDiskManager() {
+    std::string path = std::string(DATA_PATH) + "/" + std::string(DATA_FILE_NAME);
+    std::filesystem::create_directories(DATA_PATH);
+    if (!std::filesystem::exists(path)) {
+        std::ofstream create(path,std::ios::binary);
+        create.close();
+    }
+    fs_.open(path, std::ios::in | std::ios::out | std::ios::binary);
 }
 
 auto PosixDiskManager::Open() -> void {
 }
 
 auto PosixDiskManager::Close() -> void {
-    fs_.close();
+    if (fs_.is_open()) {
+        fs_.close();
+    }
 }
 
 

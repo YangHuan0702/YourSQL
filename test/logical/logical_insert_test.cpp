@@ -4,13 +4,17 @@
 #include "gtest/gtest.h"
 #include "parser/parser.h"
 #include "binder/binder.h"
+#include "executor/execute.h"
+#include "executor/executor_insert.h"
 #include "parser/statement/insert_statement.h"
 #include "planner/planner.h"
+#include "planner/physical/physical_insert.h"
+#include "storage/posix_disk_manager.h"
 
 using namespace YourSQL;
 
 
-TEST(Binder,BinderInsertSQLTest) {
+TEST(Logical,LogicalInsertSQLTest) {
     std::string sql = "insert into user (name,age) values('你好',23)";
 
     Parser parser;
@@ -40,6 +44,14 @@ TEST(Binder,BinderInsertSQLTest) {
 
     catalog->AddTable(std::move(table));
 
+    auto disk_manger = std::make_unique<PosixDiskManager>();
+    auto buffer_manager = std::make_shared<BufferManager>(std::move(disk_manger));
+
+    auto meta_page = std::make_shared<MetaPage>();
+    meta_page->Init(buffer_manager);
+
+    auto executor_context = std::make_shared<ExecutorContext>(catalog,buffer_manager,meta_page);
+
     try {
         Binder binder(catalog);
         std::unique_ptr<BaseStatement> &insertStatement = parser.GetStatements()[0];
@@ -47,8 +59,17 @@ TEST(Binder,BinderInsertSQLTest) {
         auto statement = binder.BoundInsertStatement(std::move(useStatement));
 
         Planner planner;
-        planner.CreateLogicalPlan(std::move(statement));
+        auto logical_operator = planner.CreateLogicalPlan(std::move(statement));
 
+        auto physical_operator = planner.CreatePhysicalPlan(logical_operator);
+
+        Execute execute(executor_context);
+
+        auto ph = dynamic_cast<PhysicalInsert*>(physical_operator.release());
+
+        auto executor_insert = std::make_unique<ExecutorInsert>(executor_context,ph->table_id_,ph->column_ids_);
+
+        execute.ExecuteInsert(std::move(executor_insert));
     }catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }

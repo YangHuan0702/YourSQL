@@ -34,6 +34,7 @@ auto ExecutorInsert::Next(Tuple *tuple) -> bool {
     while (children_[0]->Next(tuple)) {
         RID rid;
         page_->InsertTuple(tmp,&rid);
+        context_->buffer_manager_->Flush(page_->GetPage()->id_);
     }
     return true;
 }

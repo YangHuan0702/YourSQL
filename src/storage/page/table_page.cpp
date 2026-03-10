@@ -65,6 +65,7 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
     free_size -= SLOT_SIZE + tuple.tuple_size_;
     header_.num_rows += 1;
     rid->row_id_ = header_.num_rows;
+    page_->is_dirty_ = true;
     return true;
 }
 
