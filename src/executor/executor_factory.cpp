@@ -6,9 +6,13 @@
 #include "executor/executor_filter.h"
 #include "executor/executor_projection.h"
 #include "executor/executor_seq_scan.h"
+#include "executor/executor_values.h"
+#include "executor/executor_insert.h"
 #include "planner/physical/physical_filter.h"
 #include "planner/physical/physical_projection.h"
 #include "planner/physical/physical_seq_scan.h"
+#include "planner/physical/physical_values.h"
+#include "planner/physical/physical_insert.h"
 
 using namespace YourSQL;
 
@@ -30,6 +34,18 @@ auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_
                 executor_filter->children_.push_back(BuildExecutor(operator_));
             }
             return executor_filter;
+        }
+        case PhysicalOperatorTypes::PHYSICAL_VALUES: {
+            auto values = dynamic_cast<PhysicalValues *>(physical_operator.get());
+            return std::make_unique<ExecutorValues>(context_, values->values_);
+        }
+        case PhysicalOperatorTypes::PHYSICAL_INSERT: {
+            auto insert = dynamic_cast<PhysicalInsert *>(physical_operator.get());
+            auto executor_insert = std::make_unique<ExecutorInsert>(context_, insert->table_id_, insert->column_ids_);
+            for (auto &operator_: insert->children_) {
+                executor_insert->children_.push_back(BuildExecutor(operator_));
+            }
+            return executor_insert;
         }
         default:
             throw std::runtime_error("Unsupported physical operator type");

@@ -13,6 +13,7 @@
 #include "catalog/column_entry.h"
 #include "catalog/index_entry.h"
 #include "common/util/IdUtil.h"
+#include "storage/page/tuple.h"
 
 namespace YourSQL {
 
@@ -36,6 +37,14 @@ namespace YourSQL {
             }
 
             return columns_.at(column_id);
+        }
+
+        auto GetSchema() -> Schema {
+            Schema schema;
+            for (auto &pair : columns_) {
+                schema.columns_.push_back(pair.second);
+            }
+            return schema;
         }
 
 

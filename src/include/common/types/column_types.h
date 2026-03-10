@@ -12,6 +12,7 @@ namespace YourSQL {
         INVALID,
         INTEGER,
         BOOL,
+        DOUBLE,
         VARCHAR,
         VARCHAR2,
         TIMESTAMP,

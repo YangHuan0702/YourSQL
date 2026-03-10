@@ -33,15 +33,20 @@ auto MetaPage::Init(const std::shared_ptr<BufferManager>& buffer_manager) -> voi
         memcpy(&table_id, meta_page->data_ + offset, sizeof(entry_id));
         offset += sizeof(entry_id);
 
+        page_id_t last_page_id = 0;
+        memcpy(&last_page_id, meta_page->data_ + offset, sizeof(page_id_t));
+        offset += sizeof(page_id_t);
+
         MetaItem item;
         item.table_name_ = table_name;
         item.first_page_id = first_id;
         item.num_rows_ = rows;
         item.table_id_ = table_id;
+        item.last_page_id = last_page_id;
 
         name_tables_[table_name] = first_id;
         id_tables_[table_id] = first_id;
-        items_[table_name] = item;
+        items_[table_id] = item;
     }
 }
 

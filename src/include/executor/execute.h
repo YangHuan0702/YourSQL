@@ -14,7 +14,9 @@ namespace YourSQL {
         explicit Execute(std::shared_ptr<ExecutorContext> context,std::shared_ptr<BufferManager> buffer_manager) : context_(context),buffer_manager_(buffer_manager) {}
         ~Execute() = default;
 
-        void ExecuteQuery(std::unique_ptr<Executor> root);
+        auto ExecuteQuery(std::unique_ptr<Executor> root) -> void;
+        auto ExecuteInsert(std::unique_ptr<Executor> root) -> void;
+
 
         std::shared_ptr<ExecutorContext> context_;
         std::shared_ptr<BufferManager> buffer_manager_;

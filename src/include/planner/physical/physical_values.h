@@ -3,9 +3,7 @@
 //
 #pragma once
 #include "physical_operator.h"
-#include "common/type.h"
 #include "common/types/column_types.h"
-#include "planner/logical/logical_operator.h"
 
 namespace YourSQL {
     class PhysicalValues : public PhysicalOperator {

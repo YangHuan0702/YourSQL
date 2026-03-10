@@ -16,3 +16,11 @@ void Execute::ExecuteQuery(std::unique_ptr<Executor> root) {
     root->Close();
 }
 
+
+auto Execute::ExecuteInsert(std::unique_ptr<Executor> root) -> void {
+    root->Open();
+    Tuple tuple;
+    root->Next(&tuple);
+    root->Close();
+}
+
