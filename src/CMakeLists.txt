@@ -9,7 +9,7 @@ add_subdirectory(executor)
 add_library(YourDB SHARED ${ALL_OBJECT_FILES})
 
 find_package(Threads REQUIRED)
-set(THIRD_PARTY_LIBS sql_parser glog::glog Threads::Threads)
+set(THIRD_PARTY_LIBS sql_parser glog::glog Threads::Threads benchmark::benchmark)
 target_link_libraries(YourDB ${THIRD_PARTY_LIBS})
 
 target_include_directories(YourDB PUBLIC
