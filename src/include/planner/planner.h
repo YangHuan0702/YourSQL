@@ -8,6 +8,7 @@
 #include "binder/bound_column_ref_expression.h"
 #include "binder/bound_unary_expression.h"
 #include "binder/bound_const_expression.h"
+#include "binder/statement/bound_insert_statement.h"
 #include "binder/statement/bound_select_statement.h"
 #include "logical/logical_operator.h"
 #include "physical/physical_operator.h"
@@ -40,6 +41,7 @@ namespace YourSQL {
         auto TransformExpression(std::unique_ptr<BoundExpression> &) -> std::unique_ptr<PhysicalExpression>;
         auto TransformExpression(std::vector<std::unique_ptr<BoundExpression>> &) -> std::unique_ptr<PhysicalExpression>;
 
+        auto LogicalInsertPlan(std::unique_ptr<BoundInsertStatement>) -> std::unique_ptr<LogicalOperator>;
         auto LogicalSelectPlan(
             std::unique_ptr<BoundSelectStatement> select_statement) -> std::unique_ptr<LogicalOperator>;
     };

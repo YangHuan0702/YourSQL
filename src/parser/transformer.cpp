@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "sql/InsertStatement.h"
 #include "sql/SelectStatement.h"
 
 using namespace YourSQL;
@@ -27,6 +28,8 @@ auto Transformer::transformStatement(const hsql::SQLStatement *sql_statement) ->
     switch (sql_statement->type()) {
         case hsql::kStmtSelect:
             return transformSelect((hsql::SelectStatement*)sql_statement);
+        case hsql::kStmtInsert:
+            return transformInsert((hsql::InsertStatement*)sql_statement);
         default:
             throw std::runtime_error("Invalid SQL statement");
     }

@@ -25,10 +25,19 @@ namespace YourSQL {
 
         std::mutex lock;
 
-        auto AddColumn(ColumnEntry column_entry) -> void {
+        auto AddColumn(const ColumnEntry& column_entry) -> void {
             column_name_idx[column_entry.name_] = column_entry.id_;
             columns_.emplace(column_entry.id_,column_entry);
         }
+
+        auto GetColumnForId(entry_id column_id) -> ColumnEntry {
+            if (columns_.find(column_id) == columns_.end()) {
+                throw std::runtime_error("Column not found");
+            }
+
+            return columns_.at(column_id);
+        }
+
 
         // 迭代器支持
         auto begin(std::shared_ptr<BufferManager> buffer_manager,

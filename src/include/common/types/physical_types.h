@@ -11,5 +11,7 @@ namespace YourSQL {
         PHYSICAL_LIMIT,
         PHYSICAL_HASH_AGGREGATION,
         PHYSICAL_HASH_JOIN,
+        PHYSICAL_VALUES,
+        PHYSICAL_INSERT,
     };
 }

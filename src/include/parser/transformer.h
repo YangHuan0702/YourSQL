@@ -10,7 +10,9 @@
 #include "expression/select_expression.h"
 #include "sql/CreateStatement.h"
 #include "parser/statement.h"
+#include "sql/InsertStatement.h"
 #include "sql/Table.h"
+#include "statement/insert_statement.h"
 #include "statement/select_statement.h"
 #include "table_ref/your_table.h"
 
@@ -24,6 +26,7 @@ namespace YourSQL {
 
     private:
         auto transformSelect(hsql::SelectStatement *sqlStatement) -> std::unique_ptr<SelectStatement>;
+        auto transformInsert(hsql::InsertStatement*) -> std::unique_ptr<InsertStatement>;
 
         auto transformWhere(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
 

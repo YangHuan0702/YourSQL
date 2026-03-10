@@ -9,7 +9,9 @@
 #include "bound_star_expression.h"
 #include "bound_table_ref_expression.h"
 #include "parser/expression.h"
+#include "parser/statement/insert_statement.h"
 #include "parser/statement/select_statement.h"
+#include "statement/bound_insert_statement.h"
 #include "statement/bound_select_statement.h"
 
 namespace YourSQL {
@@ -20,6 +22,7 @@ namespace YourSQL {
         ~Binder() = default;
 
         auto BoundSelectStatement(std::unique_ptr<SelectStatement> parser_statement) -> std::unique_ptr<BoundSelectStatement>;
+        auto BoundInsertStatement(std::unique_ptr<InsertStatement> parser_statement) -> std::unique_ptr<BoundInsertStatement>;
 
         auto BoundStarExpression(std::string &table_name) -> std::unique_ptr<BoundStarExpression>;
         auto BoundColumnRefExpression(std::string table_name, std::string column_name) -> std::unique_ptr<BoundColumnRefExpression>;

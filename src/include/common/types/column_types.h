@@ -22,16 +22,17 @@ namespace YourSQL {
     class Value {
     public:
         Value() : is_null(true) {}
-        explicit Value(std::variant<int,bool,std::string,long long> val) : val_(std::move(val))  {}
+        explicit Value(std::variant<int,bool,std::string,long long,double> val) : val_(std::move(val))  {}
 
-        auto GetInt() const -> int { return std::get<int>(val_);}
-        auto GetBool() const -> bool { return std::get<bool>(val_);}
-        auto GetString() const -> std::string { return std::get<std::string>(val_);}
-        auto GetTimestamp() const -> long long { return std::get<long long>(val_);}
-        auto IsNull() const -> bool { return is_null;}
+        [[nodiscard]] auto GetInt() const -> int { return std::get<int>(val_);}
+        [[nodiscard]] auto GetBool() const -> bool { return std::get<bool>(val_);}
+        [[nodiscard]] auto GetString() const -> std::string { return std::get<std::string>(val_);}
+        [[nodiscard]] auto GetTimestamp() const -> long long { return std::get<long long>(val_);}
+        auto GetDouble() const -> double { return std::get<double>(val_);}
+        [[nodiscard]] auto IsNull() const -> bool { return is_null;}
     private:
         bool is_null = false;
-        std::variant<int,bool,std::string,long long> val_;
+        std::variant<int,bool,std::string,long long,double> val_;
     };
 
 
