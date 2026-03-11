@@ -13,6 +13,8 @@ namespace YourSQL {
 
         virtual ~DiskManger() = default;
 
+        virtual auto Size() -> size_t = 0;
+
         virtual auto Open() -> void = 0;
 
         virtual auto Close() -> void = 0;

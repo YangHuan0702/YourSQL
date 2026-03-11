@@ -47,8 +47,21 @@ TEST(Logical,LogicalInsertSQLTest) {
     auto disk_manger = std::make_unique<PosixDiskManager>();
     auto buffer_manager = std::make_shared<BufferManager>(std::move(disk_manger));
 
-    auto meta_page = std::make_shared<MetaPage>();
-    meta_page->Init(buffer_manager);
+    auto meta_page = std::make_shared<MetaPage>(buffer_manager);
+    if (disk_manger->Size() == 0) {
+
+    } else {
+        meta_page->Init();
+    }
+
+    MetaItem meta_item;
+    meta_item.table_id_ = IdManager::GetNextEntryId();
+    meta_item.table_name_ = table_name;
+    meta_item.last_page_id = meta_page->meta_page_->id_;
+    meta_item.first_page_id = meta_page->meta_page_->id_;
+    meta_item.num_rows_ = 0;
+    meta_page->AddTable(meta_item);
+
 
     auto executor_context = std::make_shared<ExecutorContext>(catalog,buffer_manager,meta_page);
 

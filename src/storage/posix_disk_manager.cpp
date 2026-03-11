@@ -20,6 +20,15 @@ PosixDiskManager::PosixDiskManager() {
     fs_.open(path, std::ios::in | std::ios::out | std::ios::binary);
 }
 
+auto PosixDiskManager::Size() -> size_t {
+    if (!fs_.is_open()) {
+        throw std::runtime_error("PosixDiskManager::Read: File is not open");
+    }
+    fs_.seekg(0, std::ios::end);
+    return fs_.tellg();
+}
+
+
 auto PosixDiskManager::Open() -> void {
 }
 

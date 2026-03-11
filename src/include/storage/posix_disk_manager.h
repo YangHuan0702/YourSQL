@@ -16,6 +16,8 @@ namespace YourSQL {
             Close();
         }
 
+        auto Size() -> size_t override;
+
         auto Open() -> void override;
 
         auto Close() -> void override;

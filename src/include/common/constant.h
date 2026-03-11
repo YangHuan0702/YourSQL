@@ -10,5 +10,7 @@ namespace YourSQL {
 
     constexpr page_id_t META_PAGE_ID = 0;
 
+    constexpr size_t META_INIT_VERSION = 0;
+    constexpr size_t META_INIT_TABLE_SIZE = 0;
 
 }

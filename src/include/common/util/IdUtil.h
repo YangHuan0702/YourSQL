@@ -12,7 +12,7 @@ namespace YourSQL {
         auto GetNextEntryId() -> entry_id {
             return obj_id_.fetch_add(1);
         }
-        std::atomic<entry_id> obj_id_{0};
+        std::atomic<entry_id> obj_id_{1};
     };
 
     class IdManager {
@@ -20,6 +20,6 @@ namespace YourSQL {
         static auto GetNextEntryId() -> entry_id {
             return id_util_.GetNextEntryId();
         }
-        inline static IdUtil id_util_;
+        inline static IdUtil id_util_{};
     };
 }
