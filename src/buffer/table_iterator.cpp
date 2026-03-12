@@ -76,6 +76,6 @@ auto TableIterator::operator++() -> TableIterator& {
 
 auto TableIterator::LoadPage() -> void {
     Page *page = buffer_manager_->FetchPage(current_page_id_);
-    current_table_page_ = std::make_unique<TablePage>(page);
+    current_table_page_ = std::make_unique<TablePage>(page,true);
     current_page_num_rows_ = current_table_page_->GetCount();
 }

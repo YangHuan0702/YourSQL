@@ -2,14 +2,16 @@
 // Created by huan.yang on 2026-03-10.
 //
 #pragma once
+#include <utility>
+
 #include "physical_operator.h"
 #include "common/types/column_types.h"
 
 namespace YourSQL {
     class PhysicalValues : public PhysicalOperator {
     public:
-        explicit PhysicalValues(std::vector<Value> values) : PhysicalOperator(
-                PhysicalOperatorTypes::PHYSICAL_VALUES),  values_(values) {
+        explicit PhysicalValues(std::vector<entry_id> column_ids,std::vector<Value> values) : PhysicalOperator(
+                PhysicalOperatorTypes::PHYSICAL_VALUES), column_ids_(std::move(column_ids)), values_(std::move(values)) {
         }
 
         ~PhysicalValues() override = default;
@@ -19,6 +21,7 @@ namespace YourSQL {
             return "PhysicalValues";
         }
 
+        std::vector<entry_id> column_ids_;
         std::vector<Value> values_;
     };
 }

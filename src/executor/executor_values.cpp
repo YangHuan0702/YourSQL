@@ -6,9 +6,7 @@
 using namespace YourSQL;
 
 auto ExecutorValues::Close() -> void {
-    if (row) {
-        delete row;
-    }
+    delete row;
 }
 
 
@@ -24,18 +22,22 @@ auto ExecutorValues::Open() -> void {
         column_index_map[column_ids_[i]] = i;
     }
     std::vector<Value> full_values;
-    for (auto column : table_entry->columns_) {
-        if (column_index_map.find(column.first) == column_index_map.end()) {
-            full_values.push_back(Value(true));
+    for (const auto& column : table_entry->columns_) {
+        auto column_id = column.first;
+        if (column_index_map.find(column_id) == column_index_map.end()) {
+            full_values.emplace_back();
         } else {
-            full_values.push_back(values_[column_index_map[column.first]]);
+            full_values.push_back(values_[column_index_map[column_id]]);
         }
     }
     Schema schema = table_entry->GetSchema();
     row = new Row(schema);
+    row->values_ = std::move(full_values);
+    used_ = false;
 }
 
 auto ExecutorValues::Next(Tuple *tuple) -> bool {
+    if (used_) return false;
     tuple->data_ = row->Serialize();
     tuple->schema_ = row->schema_;
     used_ = true;

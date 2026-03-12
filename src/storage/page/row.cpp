@@ -4,6 +4,7 @@
 #include "storage/page/row.h"
 
 #include <cstring>
+#include <iostream>
 #include <stdexcept>
 
 using namespace YourSQL;
@@ -87,8 +88,11 @@ auto Row::Serialize() const -> char * {
                     break;
                 case ColumnTypes::TIMESTAMP: size += sizeof(long long);
                     break;
+                case ColumnTypes::VARCHAR2:
                 case ColumnTypes::VARCHAR: {
                     size += sizeof(size_t);
+                    Value value = values_[i];
+                    std::cout << "row:" << value.GetString() <<std::endl;
                     size += values_[i].GetString().size();
                     break;
                 }
@@ -125,6 +129,7 @@ auto Row::Serialize() const -> char * {
                     begin_offset += sizeof(long long);
                     break;
                 }
+                case ColumnTypes::VARCHAR2:
                 case ColumnTypes::VARCHAR: {
                     size_t len = values_[i].GetString().size();
                     memcpy(data + begin_offset, &len, sizeof(size_t));

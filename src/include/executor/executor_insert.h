@@ -2,6 +2,8 @@
 // Created by huan.yang on 2026-03-10.
 //
 #pragma once
+#include <utility>
+
 #include "executor.h"
 
 namespace YourSQL {
@@ -9,7 +11,7 @@ namespace YourSQL {
     public:
         explicit ExecutorInsert(std::shared_ptr<ExecutorContext> context, entry_id tableId,
                                 std::vector<entry_id> columnIds) : Executor(
-            context, PhysicalOperatorTypes::PHYSICAL_INSERT),table_id_(tableId),column_ids_(columnIds) {
+            std::move(context), PhysicalOperatorTypes::PHYSICAL_INSERT),table_id_(tableId),column_ids_(std::move(columnIds)) {
         }
         ~ExecutorInsert() override = default;
 

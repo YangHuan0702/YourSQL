@@ -106,6 +106,7 @@ auto MetaPage::UpdateTableRows(entry_id table_id, size_t change_size) -> void {
 
     memcpy(meta_page_->data_+offset, &item.num_rows_, sizeof(size_t));
     meta_page_->is_dirty_ = true;
+    buffer_manager_->Flush(meta_page_->id_);
 }
 
 auto MetaPage::UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> void {
@@ -120,6 +121,7 @@ auto MetaPage::UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> v
 
     memcpy(meta_page_->data_+offset, &item.last_page_id, sizeof(page_id_t));
     meta_page_->is_dirty_ = true;
+    buffer_manager_->Flush(meta_page_->id_);
 }
 
 auto MetaPage::AddTable(const MetaItem &item) -> void {
@@ -150,4 +152,5 @@ auto MetaPage::AddTable(const MetaItem &item) -> void {
     last_point_ += sizeof(page_id_t);
 
     meta_page_->is_dirty_ = true;
+    buffer_manager_->Flush(meta_page_->id_);
 }

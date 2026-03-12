@@ -27,6 +27,7 @@ namespace YourSQL {
         auto Write(Page *page) -> void override;
 
     private:
+        std::string file_path_;
         std::fstream fs_;
         std::mutex mutex_;
     };

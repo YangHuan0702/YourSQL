@@ -6,23 +6,43 @@
 using namespace YourSQL;
 
 
-TablePage::TablePage(Page *page) : page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
+//TODO: 根据实际情况来确定是否需要读取数据还是初始化header
+TablePage::TablePage(Page *page,bool read) : page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
     char *data = page->data_;
-    memcpy(&header_.version, data, NUM_ROWS_OFFSET);
-    memcpy(&header_.num_rows,data+NUM_ROWS_OFFSET,sizeof(uint32_t));
-    memcpy(&header_.page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t),sizeof(uint64_t));
-    memcpy(&header_.next_page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(uint64_t),sizeof(uint64_t));
+    if (read) {
+        memcpy(&header_.version, data, NUM_ROWS_OFFSET);
+        memcpy(&header_.num_rows,data+NUM_ROWS_OFFSET,sizeof(uint32_t));
+        memcpy(&header_.page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t),sizeof(uint64_t));
+        memcpy(&header_.next_page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(uint64_t),sizeof(uint64_t));
 
-    uint32_t slot_count_size = SLOT_SIZE * header_.num_rows;
-    uint32_t tuple_count_size = 0;
-    for (uint32_t i = 1; i <= header_.num_rows; ++i) {
-        size_t offset = PAGE_SIZE - i * SLOT_SIZE + sizeof(uint16_t);
-        uint16_t size = 0;
-        memcpy(&size, data+offset, sizeof(uint16_t));
-        tuple_count_size += size;
+        uint32_t slot_count_size = SLOT_SIZE * header_.num_rows;
+        uint32_t tuple_count_size = 0;
+        for (uint32_t i = 1; i <= header_.num_rows; ++i) {
+            size_t offset = PAGE_SIZE - i * SLOT_SIZE + sizeof(uint16_t);
+            uint16_t size = 0;
+            memcpy(&size, data+offset, sizeof(uint16_t));
+            tuple_count_size += size;
+        }
+        free_size -= slot_count_size + tuple_count_size;
+    } else {
+        // init
+        header_.version = 0;
+        header_.num_rows = 0;
+        header_.page_id = page->id_;
+        header_.next_page_id = 0;
+
+        size_t offset = 0;
+        memcpy(data+offset,&header_.version,sizeof(uint16_t));
+        offset += sizeof(uint16_t);
+        memcpy(data+offset,&header_.num_rows,sizeof(uint32_t));
+        offset += sizeof(uint32_t);
+        memcpy(data+offset,&header_.page_id,sizeof(page_id_t));
+        offset += sizeof(page_id_t);
+        memcpy(data+offset,&header_.next_page_id,sizeof(page_id_t));
+
+        page_->is_dirty_ = true;
     }
 
-    free_size -= slot_count_size + tuple_count_size;
 }
 
 
@@ -48,6 +68,7 @@ auto TablePage::GetTuple(const RID &rid, Tuple *tuple) {
 
 auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
     std::lock_guard lock(mutex_);
+    // TODO: 计算tuple_size
     if (tuple.tuple_size_ + SLOT_SIZE > free_size) {
         return false;
     }
@@ -60,7 +81,7 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
     memcpy(page_->data_ + new_slot_offset, &data_point, sizeof(uint16_t));
     memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t), &tuple.tuple_size_, sizeof(uint16_t));
     char del = 0;
-    memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t) * 2 + 1, &del, sizeof(char));
+    memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t) * 2, &del, sizeof(char));
 
     free_size -= SLOT_SIZE + tuple.tuple_size_;
     header_.num_rows += 1;

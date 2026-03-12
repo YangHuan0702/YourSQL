@@ -29,7 +29,7 @@ namespace YourSQL {
         [[nodiscard]] auto GetBool() const -> bool { return std::get<bool>(val_);}
         [[nodiscard]] auto GetString() const -> std::string { return std::get<std::string>(val_);}
         [[nodiscard]] auto GetTimestamp() const -> long long { return std::get<long long>(val_);}
-        auto GetDouble() const -> double { return std::get<double>(val_);}
+        [[nodiscard]] auto GetDouble() const -> double { return std::get<double>(val_);}
         [[nodiscard]] auto IsNull() const -> bool { return is_null;}
     private:
         bool is_null = false;

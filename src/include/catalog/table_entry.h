@@ -2,6 +2,7 @@
 // Created by 杨欢 on 2026/2/14.
 //
 #pragma once
+#include <map>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -16,19 +17,19 @@
 #include "storage/page/tuple.h"
 
 namespace YourSQL {
-
     class TableEntry : public BaseEntry {
     public:
         explicit TableEntry(entry_id id, std::string &name);
+
         ~TableEntry() override = default;
 
         auto to_string() -> std::string override;
 
         std::mutex lock;
 
-        auto AddColumn(const ColumnEntry& column_entry) -> void {
+        auto AddColumn(const ColumnEntry &column_entry) -> void {
             column_name_idx[column_entry.name_] = column_entry.id_;
-            columns_.emplace(column_entry.id_,column_entry);
+            columns_.emplace(column_entry.id_, column_entry);
         }
 
         auto GetColumnForId(entry_id column_id) -> ColumnEntry {
@@ -41,7 +42,7 @@ namespace YourSQL {
 
         auto GetSchema() -> Schema {
             Schema schema;
-            for (auto &pair : columns_) {
+            for (auto &pair: columns_) {
                 schema.columns_.push_back(pair.second);
             }
             return schema;
@@ -49,21 +50,26 @@ namespace YourSQL {
 
         auto GetColumnIds() -> std::vector<entry_id> {
             std::vector<entry_id> ids;
-            for (auto column : columns_) {
+            ids.reserve(columns_.size());
+            for (const auto &column: columns_) {
                 ids.push_back(column.first);
             }
             return ids;
+        }
+
+        auto GetNextColumnId() const -> entry_id {
+            return columns_.size();
         }
 
 
         // 迭代器支持
         auto begin(std::shared_ptr<BufferManager> buffer_manager,
                    std::shared_ptr<MetaPage> meta_page) -> TableIterator;
+
         auto end() -> TableIterator;
 
         std::unique_ptr<IndexEntry> index_entry;
-        std::unordered_map<std::string,entry_id> column_name_idx;
-        std::unordered_map<entry_id,ColumnEntry> columns_;
+        std::unordered_map<std::string, entry_id> column_name_idx;
+        std::map<entry_id, ColumnEntry> columns_;
     };
-
 }

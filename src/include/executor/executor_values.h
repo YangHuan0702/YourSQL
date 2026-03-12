@@ -9,8 +9,8 @@
 namespace YourSQL {
     class ExecutorValues : public Executor {
     public:
-        explicit ExecutorValues(std::shared_ptr<ExecutorContext> context, std::vector<Value> values,std::vector<entry_id> column_id,entry_id table_id)
-            : Executor(context, PhysicalOperatorTypes::PHYSICAL_VALUES), context_(context),table_id_(table_id),column_ids_(std::move(column_id)),values_(std::move(values)) {
+        explicit ExecutorValues(const std::shared_ptr<ExecutorContext>& context, std::vector<Value> values,std::vector<entry_id> column_ids,entry_id table_id)
+            : Executor(context, PhysicalOperatorTypes::PHYSICAL_VALUES), context_(context),table_id_(table_id),column_ids_(std::move(column_ids)),values_(std::move(values)) {
         }
 
         ~ExecutorValues() override = default;

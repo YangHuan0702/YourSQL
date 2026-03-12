@@ -14,7 +14,7 @@ namespace YourSQL {
 
     class BufferManager {
     public:
-        explicit BufferManager(std::unique_ptr<DiskManger> disk_manger) : disk_manager_(std::move(disk_manger)),max_pages_(BUFFER_MAX_PAGE) {
+        explicit BufferManager(std::shared_ptr<DiskManger> disk_manger) : disk_manager_(std::move(disk_manger)),max_pages_(BUFFER_MAX_PAGE) {
             frames_ = new Page[max_pages_];
             lru_manager_ = std::make_unique<LRUManager>();
             for (int i = 0; i < max_pages_; i++) {
@@ -25,6 +25,7 @@ namespace YourSQL {
             delete [] frames_;
         }
 
+        auto NewPage() -> Page*;
         auto Release(Page *page) -> void;
         auto Release(page_id_t page_id) -> void;
         auto FetchPage(page_id_t page_id) -> Page*;
@@ -36,7 +37,7 @@ namespace YourSQL {
     private:
         auto ReadPage(page_id_t,Page *page) -> bool;
 
-        std::unique_ptr<DiskManger> disk_manager_;
+        std::shared_ptr<DiskManger> disk_manager_;
         std::unique_ptr<LRUManager> lru_manager_;
         int max_pages_;
         Page *frames_;

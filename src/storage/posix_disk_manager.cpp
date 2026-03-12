@@ -11,21 +11,26 @@
 using namespace YourSQL;
 
 PosixDiskManager::PosixDiskManager() {
-    std::string path = std::string(DATA_PATH) + "/" + std::string(DATA_FILE_NAME);
+    file_path_ = std::string(DATA_PATH) + "/" + std::string(DATA_FILE_NAME);
     std::filesystem::create_directories(DATA_PATH);
-    if (!std::filesystem::exists(path)) {
-        std::ofstream create(path,std::ios::binary);
+    if (!std::filesystem::exists(file_path_)) {
+        std::ofstream create(file_path_,std::ios::binary);
         create.close();
     }
-    fs_.open(path, std::ios::in | std::ios::out | std::ios::binary);
+    fs_.open(file_path_, std::ios::in | std::ios::out | std::ios::binary);
+
+    if (!fs_.is_open()) {
+        throw std::runtime_error("Could not open file " + file_path_);
+    }
 }
 
 auto PosixDiskManager::Size() -> size_t {
     if (!fs_.is_open()) {
         throw std::runtime_error("PosixDiskManager::Read: File is not open");
     }
-    fs_.seekg(0, std::ios::end);
-    return fs_.tellg();
+    // fs_.seekg(0, std::ios::end);
+    // return fs_.tellg();
+    return std::filesystem::file_size(file_path_);
 }
 
 
@@ -55,4 +60,5 @@ auto PosixDiskManager::Write(Page *page) -> void {
     page_id_t page_id = page->id_;
     fs_.seekp(page_id * PAGE_SIZE, std::ios::beg);
     fs_.write(page->data_,PAGE_SIZE);
+    fs_.flush();
 }

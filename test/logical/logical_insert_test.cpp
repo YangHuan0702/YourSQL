@@ -1,11 +1,14 @@
 //
 // Created by huan.yang on 2026-03-10.
 //
+
 #include "gtest/gtest.h"
 #include "parser/parser.h"
 #include "binder/binder.h"
 #include "executor/execute.h"
+#include "executor/executor_factory.h"
 #include "executor/executor_insert.h"
+#include "glog/logging.h"
 #include "parser/statement/insert_statement.h"
 #include "planner/planner.h"
 #include "planner/physical/physical_insert.h"
@@ -23,44 +26,49 @@ TEST(Logical,LogicalInsertSQLTest) {
     auto catalog = std::make_shared<Catalog>();
     std::string table_name = "user";
     auto table = std::make_unique<TableEntry>(IdManager::GetNextEntryId(),table_name);
+    auto table_id = table->id_;
 
     std::string name = "name";
-    auto column_name = ColumnEntry(IdManager::GetNextEntryId(),name,ColumnTypes::VARCHAR);
+    auto column_name = ColumnEntry(table->GetNextColumnId(),name,ColumnTypes::VARCHAR);
+    table->AddColumn(column_name);
 
     std::string age = "age";
-    auto column_age = ColumnEntry(IdManager::GetNextEntryId(),age,ColumnTypes::INTEGER);
+    auto column_age = ColumnEntry(table->GetNextColumnId(),age,ColumnTypes::INTEGER);
+    table->AddColumn(column_age);
 
     std::string email = "email";
-    auto column_email = ColumnEntry(IdManager::GetNextEntryId(),email,ColumnTypes::VARCHAR);
+    auto column_email = ColumnEntry(table->GetNextColumnId(),email,ColumnTypes::VARCHAR);
+    table->AddColumn(column_email);
 
     std::string del = "del";
-    auto column_del = ColumnEntry(IdManager::GetNextEntryId(),del,ColumnTypes::INTEGER);
+    auto column_del = ColumnEntry(table->GetNextColumnId(),del,ColumnTypes::INTEGER);
     column_del.default_value_ = Value(0);
-
-    table->AddColumn(column_name);
-    table->AddColumn(column_age);
-    table->AddColumn(column_email);
     table->AddColumn(column_del);
 
     catalog->AddTable(std::move(table));
 
-    auto disk_manger = std::make_unique<PosixDiskManager>();
-    auto buffer_manager = std::make_shared<BufferManager>(std::move(disk_manger));
+    auto disk_manger = std::make_shared<PosixDiskManager>();
+    auto buffer_manager = std::make_shared<BufferManager>(disk_manger);
 
     auto meta_page = std::make_shared<MetaPage>(buffer_manager);
-    if (disk_manger->Size() == 0) {
+    try {
+        if (disk_manger->Size() == 0) {
+            meta_page->Init();
+        } else {
+            meta_page->ReadMata();
+        }
 
-    } else {
-        meta_page->Init();
+
+        MetaItem meta_item;
+        meta_item.table_id_ = table_id;
+        meta_item.table_name_ = table_name;
+        meta_item.last_page_id = 0;
+        meta_item.first_page_id = 0;
+        meta_item.num_rows_ = 0;
+        meta_page->AddTable(meta_item);
+    }catch (std::exception &e) {
+        std::cout << e.what() << std::endl;
     }
-
-    MetaItem meta_item;
-    meta_item.table_id_ = IdManager::GetNextEntryId();
-    meta_item.table_name_ = table_name;
-    meta_item.last_page_id = meta_page->meta_page_->id_;
-    meta_item.first_page_id = meta_page->meta_page_->id_;
-    meta_item.num_rows_ = 0;
-    meta_page->AddTable(meta_item);
 
 
     auto executor_context = std::make_shared<ExecutorContext>(catalog,buffer_manager,meta_page);
@@ -78,11 +86,10 @@ TEST(Logical,LogicalInsertSQLTest) {
 
         Execute execute(executor_context);
 
-        auto ph = dynamic_cast<PhysicalInsert*>(physical_operator.release());
+        ExecutorFactory factory(executor_context,table_id);
 
-        auto executor_insert = std::make_unique<ExecutorInsert>(executor_context,ph->table_id_,ph->column_ids_);
-
-        execute.ExecuteInsert(std::move(executor_insert));
+        auto executor = factory.BuildExecutor(physical_operator);
+        execute.ExecuteInsert(std::move(executor));
     }catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }

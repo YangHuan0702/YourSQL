@@ -20,7 +20,4 @@ auto Transformer::transformWhere(hsql::Expr *expr) -> std::unique_ptr<BaseExpres
         default:
             throw std::runtime_error("Invalid Where SQL expression");
     }
-    std::string exprName = std::string(expr->name);
-    std::cout << exprName << std::endl;
-    return nullptr;
 }

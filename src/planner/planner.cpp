@@ -46,7 +46,7 @@ auto Planner::CreatePhysicalPlan(
         }
         case LogicalOperatorType::LOGICAL_VALUES: {
             auto logical_op = dynamic_cast<LogicalValues*>(logical_operator.get());
-            return std::make_unique<PhysicalValues>(logical_op->values_);
+            return std::make_unique<PhysicalValues>(logical_op->column_ids_,logical_op->values_);
         }
         case LogicalOperatorType::LOGICAL_GET: {
             auto logical_op = dynamic_cast<LogicalSeqScan *>(logical_operator.get());

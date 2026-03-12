@@ -8,9 +8,8 @@
 namespace YourSQL {
     class LogicalValues : public LogicalOperator {
     public:
-        explicit LogicalValues(std::vector<Value> values) : LogicalOperator(
-                                                                LogicalOperatorType::LOGICAL_VALUES),
-                                                            values_(std::move(values)) {
+        explicit LogicalValues(std::vector<entry_id> column_ids, std::vector<Value> values) : LogicalOperator(
+                LogicalOperatorType::LOGICAL_VALUES), column_ids_(std::move(column_ids)),values_(std::move(values)) {
         }
 
         ~LogicalValues() override = default;
@@ -18,6 +17,8 @@ namespace YourSQL {
         auto to_string() -> std::string override {
             return "LogicalValues";
         }
+
+        std::vector<entry_id> column_ids_;
         std::vector<Value> values_;
     };
 }
