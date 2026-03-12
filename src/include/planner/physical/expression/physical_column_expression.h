@@ -6,13 +6,15 @@
 #include "storage/page/row.h"
 
 namespace YourSQL {
-
     class PhysicalColumnExpression : public PhysicalExpression {
     public:
-        explicit PhysicalColumnExpression(entry_id table_id,entry_id column_id) : table_id_(table_id),column_id_(column_id) {}
+        explicit PhysicalColumnExpression(entry_id table_id, entry_id column_id) : table_id_(table_id),
+            column_id_(column_id) {
+        }
+
         ~PhysicalColumnExpression() override = default;
 
-        auto Evaluate(const Tuple &tuple) const ->Value override {
+        auto Evaluate(const Tuple &tuple) const -> Value override {
             auto schema = tuple.schema_;
             Row r(schema);
 
@@ -24,7 +26,5 @@ namespace YourSQL {
 
         entry_id table_id_;
         entry_id column_id_;
-
     };
-
 }

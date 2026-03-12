@@ -25,5 +25,6 @@ namespace YourSQL {
         std::string table_name_;
         size_t cursor_{};
         TableIterator *iterator_;
+        Schema schema_;
     };
 }

@@ -16,9 +16,12 @@ namespace YourSQL {
 
         auto ExecuteQuery(std::unique_ptr<Executor> root) -> void;
         auto ExecuteInsert(std::unique_ptr<Executor> root) -> void;
-
+        auto PrintTuple(const Tuple &tuple) -> void;
 
         std::shared_ptr<ExecutorContext> context_;
+        bool header_printed_{false};
+        Schema current_schema_;
+        size_t row_count_{0};
     };
 
 }

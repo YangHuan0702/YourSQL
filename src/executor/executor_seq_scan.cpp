@@ -17,6 +17,7 @@ auto ExecutorSeqScan::Next(Tuple *tuple) -> bool {
     if (!iterator_ || iterator_->IsEnd()) { return false;}
     *tuple = **iterator_;
     ++(*iterator_);
+    tuple->schema_ = schema_;
     return true;
 }
 
@@ -27,12 +28,11 @@ auto ExecutorSeqScan::Open() -> void {
     }
     auto table_id = context_->catalog_->table_name_idx_[table_name_];
     auto &table = context_->catalog_->tables_[table_id];
-    Schema schema;
-    std::transform(table->columns_.begin(),table->columns_.end(),std::back_inserter(schema.columns_),[](const auto &p) {
+    std::transform(table->columns_.begin(),table->columns_.end(),std::back_inserter(schema_.columns_),[](const auto &p) {
         return p.second;
     });
-    schema.tuple_size_ = -1;
-    iterator_ = new TableIterator(context_->buffer_manager_,context_->meta_page_,table_name_,table_id,schema);
+    schema_.tuple_size_ = -1;
+    iterator_ = new TableIterator(context_->buffer_manager_,context_->meta_page_,table_name_,table_id,schema_);
 }
 
 

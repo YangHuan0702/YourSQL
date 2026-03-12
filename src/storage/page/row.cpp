@@ -73,7 +73,7 @@ auto Row::GetValue(const std::string &column_name) -> Value {
     throw std::invalid_argument("[Row::GetValue]column not found");
 }
 
-auto Row::Serialize() const -> char * {
+auto Row::Serialize() -> char * {
     char *meta = new char[schema_.columns_.size()];
     size_t size = schema_.columns_.size();
     for (size_t i = 0; i < schema_.columns_.size(); ++i) {
@@ -146,6 +146,7 @@ auto Row::Serialize() const -> char * {
             }
         }
     }
+    use_size_ = size;
     return data;
 }
 

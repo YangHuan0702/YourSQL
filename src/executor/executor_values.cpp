@@ -39,6 +39,7 @@ auto ExecutorValues::Open() -> void {
 auto ExecutorValues::Next(Tuple *tuple) -> bool {
     if (used_) return false;
     tuple->data_ = row->Serialize();
+    tuple->tuple_size_ = row->use_size_;
     tuple->schema_ = row->schema_;
     used_ = true;
     return true;

@@ -25,7 +25,11 @@ auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_
         }
         case PhysicalOperatorTypes::PHYSICAL_PROJECTION: {
             auto projection = dynamic_cast<PhysicalProjection *>(physical_operator.get());
-            return std::make_unique<ExecutorProjection>(context_, projection->columns_);
+            auto r = std::make_unique<ExecutorProjection>(context_, projection->columns_);
+            for (auto &operator_ : physical_operator->children_) {
+                r->children_.push_back(BuildExecutor(operator_));
+            }
+            return r;
         }
         case PhysicalOperatorTypes::PHYSICAL_FILTER: {
             auto filter = dynamic_cast<PhysicalFilter *>(physical_operator.get());

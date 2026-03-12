@@ -39,14 +39,14 @@ auto Planner::CreatePhysicalPlan(
     const std::unique_ptr<LogicalOperator> &logical_operator) -> std::unique_ptr<PhysicalOperator> {
     switch (logical_operator->type_) {
         case LogicalOperatorType::LOGICAL_INSERT: {
-            auto logical_op = dynamic_cast<LogicalInsert*>(logical_operator.get());
-            auto r = std::make_unique<PhysicalInsert>(logical_op->table_id_,logical_op->column_ids_);
+            auto logical_op = dynamic_cast<LogicalInsert *>(logical_operator.get());
+            auto r = std::make_unique<PhysicalInsert>(logical_op->table_id_, logical_op->column_ids_);
             r->children_.push_back(CreatePhysicalPlan(logical_operator->children_[0]));
             return r;
         }
         case LogicalOperatorType::LOGICAL_VALUES: {
-            auto logical_op = dynamic_cast<LogicalValues*>(logical_operator.get());
-            return std::make_unique<PhysicalValues>(logical_op->column_ids_,logical_op->values_);
+            auto logical_op = dynamic_cast<LogicalValues *>(logical_operator.get());
+            return std::make_unique<PhysicalValues>(logical_op->column_ids_, logical_op->values_);
         }
         case LogicalOperatorType::LOGICAL_GET: {
             auto logical_op = dynamic_cast<LogicalSeqScan *>(logical_operator.get());
@@ -54,11 +54,14 @@ auto Planner::CreatePhysicalPlan(
             return r;
         }
         case LogicalOperatorType::LOGICAL_FILTER: {
-            // auto logical_op = dynamic_cast<LogicalFilter *>(logical_operator.get());
+            auto logical_op = dynamic_cast<LogicalFilter *>(logical_operator.get());
             auto r = std::make_unique<PhysicalFilter>();
-            // for (auto &bound_expression : logical_op->expressions_) {
-            // r->expressions_.push_back(TransformExpression(bound_expression.get()));
-            // }
+            // 将 logical expressions 转换为 physical expression
+            r->expressions_ = TransformExpression(logical_op->expressions_);
+            // 处理子操作符
+            for (auto &child: logical_op->children_) {
+                r->children_.push_back(CreatePhysicalPlan(child));
+            }
             return r;
         }
         case LogicalOperatorType::LOGICAL_PROJECTION: {
@@ -67,6 +70,9 @@ auto Planner::CreatePhysicalPlan(
             for (auto &bound_expression: logical_op->expressions_) {
                 auto expr = dynamic_cast<BoundColumnRefExpression *>(bound_expression.get());
                 r->columns_.push_back(expr->column_id_);
+            }
+            for (auto &operator_ : logical_op->children_) {
+                r->children_.push_back(CreatePhysicalPlan(operator_));
             }
             return r;
         }

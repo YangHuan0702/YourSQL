@@ -119,6 +119,23 @@ auto MetaPage::UpdateTableRows(entry_id table_id, size_t change_size) -> void {
     buffer_manager_->Flush(meta_page_->id_);
 }
 
+auto MetaPage::UpdateTableFirstId(entry_id table_id, page_id_t first_page_id) -> void {
+    if (items_.find(table_id) == items_.end()) {
+        throw std::runtime_error("MetaPage::UpdateTableLastId don`t find target table_id");
+    }
+
+    auto &item = items_[table_id];
+    item.first_page_id = first_page_id;
+
+    size_t name_len = GetNameLen(item);
+    size_t offset = item.offset + sizeof(size_t) + name_len ;
+
+    memcpy(meta_page_->data_+offset, &item.first_page_id, sizeof(page_id_t));
+    meta_page_->is_dirty_ = true;
+    buffer_manager_->Flush(meta_page_->id_);
+}
+
+
 auto MetaPage::UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> void {
     if (items_.find(table_id) == items_.end()) {
         throw std::runtime_error("MetaPage::UpdateTableLastId don`t find target table_id");

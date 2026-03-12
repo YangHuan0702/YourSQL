@@ -18,12 +18,20 @@ auto ExecutorInsert::Open() -> void {
     if (context_->meta_page_->items_.find(table_id_) == context_->meta_page_->items_.end()) {
         throw std::runtime_error("ExecutorInsert::Open No meta page exists:" + std::to_string(table_id_));
     }
-    MetaItem item = context_->meta_page_->items_[table_id_];
+    MetaItem &item = context_->meta_page_->items_[table_id_];
     Page *page = nullptr;
     bool read = true;
     if (item.last_page_id == INVALID_PAGE_ID) {
         page = context_->buffer_manager_->NewPage();
         read = false;
+
+        context_->meta_page_->UpdateTableLastId(item.table_id_,page->id_);
+        item.last_page_id = page->id_;
+
+        if (item.first_page_id == INVALID_PAGE_ID) {
+            item.first_page_id = page->id_;
+            context_->meta_page_->UpdateTableFirstId(item.table_id_,page->id_);
+        }
     } else {
         page = context_->buffer_manager_->FetchPage(item.last_page_id);
     }

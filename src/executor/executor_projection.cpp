@@ -15,7 +15,7 @@ auto ExecutorProjection::Next(Tuple *tuple) -> bool {
         return false;
     }
 
-    Row row(tuple->schema_);
+    Row row(input.schema_);
     row.Deserialize(input);
     std::vector<Value> values;
     for (entry_id column_id : column_ids_) {

@@ -6,6 +6,7 @@
 #include <utility>
 #include "common/exception.h"
 #include "storage/page/row.h"
+#include "glog/logging.h"
 
 using namespace YourSQL;
 
@@ -22,6 +23,7 @@ TableIterator::TableIterator(std::shared_ptr<BufferManager> buffer_manager,
     current_page_id_ = meta_page_->GetFirstPageId(table_name_);
 
     if (current_page_id_ == 0) {
+        LOG(WARNING) << "Table does not have a page id: " << table_name_ << " ,find table id : 0";
         // 表为空，直接设置为 end 迭代器
         is_end_ = true;
         return;
@@ -36,6 +38,8 @@ auto TableIterator::operator*() -> Tuple {
     if (is_end_) {
         throw std::runtime_error("TableIterator::operator*() is not valid");
     }
+
+    // TODO： 这是哪门子的tuple?
 
     RID rid;
     rid.page_id_ = current_page_id_;

@@ -54,6 +54,7 @@ namespace YourSQL {
         auto AddTable(const MetaItem &item) -> void ;
 
         auto UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> void ;
+        auto UpdateTableFirstId(entry_id table_id, page_id_t first_page_id) -> void ;
 
         auto UpdateTableRows(entry_id table_id, size_t change_size) -> void ;
 
