@@ -11,12 +11,13 @@ using namespace YourSQL;
 
 TableIterator::TableIterator(std::shared_ptr<BufferManager> buffer_manager,
                              std::shared_ptr<MetaPage> meta_page,
-                             std::string table_name,
+                             std::string table_name, entry_id table_id,
                              Schema schema)
     : buffer_manager_(std::move(buffer_manager)),
       meta_page_(std::move(meta_page)),
       table_name_(std::move(table_name)),
-      schema_(std::move(schema)) {
+      schema_(std::move(schema)),
+      table_id_(table_id) {
     // 获取表的第一个页面 ID
     current_page_id_ = meta_page_->GetFirstPageId(table_name_);
 
@@ -46,7 +47,7 @@ auto TableIterator::operator*() -> Tuple {
     return tuple;
 }
 
-auto TableIterator::operator++() -> TableIterator& {
+auto TableIterator::operator++() -> TableIterator & {
     if (is_end_) {
         return *this;
     }
@@ -76,6 +77,7 @@ auto TableIterator::operator++() -> TableIterator& {
 
 auto TableIterator::LoadPage() -> void {
     Page *page = buffer_manager_->FetchPage(current_page_id_);
-    current_table_page_ = std::make_unique<TablePage>(page,true);
+
+    current_table_page_ = std::make_unique<TablePage>(meta_page_,table_id_, page, true);
     current_page_num_rows_ = current_table_page_->GetCount();
 }

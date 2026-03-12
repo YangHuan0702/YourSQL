@@ -7,7 +7,7 @@ using namespace YourSQL;
 
 
 //TODO: 根据实际情况来确定是否需要读取数据还是初始化header
-TablePage::TablePage(Page *page,bool read) : page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
+TablePage::TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page *page,bool read) : meta_page_(std::move(meta_page)),table_id_(table_id),page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
     char *data = page->data_;
     if (read) {
         memcpy(&header_.version, data, NUM_ROWS_OFFSET);
@@ -87,6 +87,7 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
     header_.num_rows += 1;
     rid->row_id_ = header_.num_rows;
     page_->is_dirty_ = true;
+    meta_page_->UpdateTableRows(table_id_,1);
     return true;
 }
 
@@ -143,5 +144,6 @@ auto TablePage::DeleteTuple(const RID &rid) -> void {
     if (!del) {
         del = 1;
         memcpy(page_->data_ + offset + sizeof(uint16_t) * 2 + 1,&del,sizeof(char));
+        meta_page_->UpdateTableRows(table_id_,-1);
     }
 }

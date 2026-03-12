@@ -6,6 +6,7 @@
 #include <shared_mutex>
 
 #include "tuple.h"
+#include "buffer/meta_page.h"
 #include "buffer/page.h"
 #include "storage/r_id.h"
 
@@ -31,7 +32,7 @@ namespace YourSQL {
 
     class TablePage {
     public:
-        explicit TablePage(Page *page,bool read);
+        explicit TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page *page,bool read);
         ~TablePage() = default;
 
         auto GetCount() -> uint32_t;
@@ -45,7 +46,8 @@ namespace YourSQL {
         }
 
     private:
-
+        std::shared_ptr<MetaPage> meta_page_;
+        entry_id table_id_;
         Page *page_;
         TableHeader header_{};
         uint32_t free_size;

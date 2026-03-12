@@ -32,7 +32,7 @@ auto ExecutorSeqScan::Open() -> void {
         return p.second;
     });
     schema.tuple_size_ = -1;
-    iterator_ = new TableIterator(context_->buffer_manager_,context_->meta_page_,table_name_,schema);
+    iterator_ = new TableIterator(context_->buffer_manager_,context_->meta_page_,table_name_,table_id,schema);
 }
 
 

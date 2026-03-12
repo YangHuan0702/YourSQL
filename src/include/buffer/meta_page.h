@@ -22,14 +22,14 @@ namespace YourSQL {
         size_t offset;
     };
 
-#define ITEMS_OFFSET_BEGIN (sizeof(size_t) * 2)
+#define ITEMS_OFFSET_BEGIN (sizeof(size_t) * 3)
 #define ITEM_FIXED_SIZE (sizeof(size_t) + sizeof(page_id_t) * 2 + sizeof(size_t) + sizeof(entry_id))
 
     /**
      * Header format:
-     *  -------------------------------------------------------------------
-     * |version|table_size|item_1|item_2|....|
-     *  -------------------------------------------------------------------
+     *  ---------------------------------------------------------------------
+     * | version | table_size | last point | item_1 | item_2 | item_3 | ... |
+     *  ---------------------------------------------------------------------
      *
      *
      *  items format:
@@ -62,6 +62,8 @@ namespace YourSQL {
         auto GetFirstPageId(entry_id table_id) -> page_id_t;
 
         auto GetNameLen(const MetaItem &item) -> size_t;
+
+        auto UpdateTableSize(size_t change_size) -> void;
 
         size_t version_{};
         size_t table_size_{};

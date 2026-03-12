@@ -2,8 +2,8 @@
 // Created by huan.yang on 2026-03-07.
 //
 #include "buffer/meta_page.h"
-
 #include "common/constant.h"
+#include "glog/logging.h"
 
 using namespace YourSQL;
 
@@ -40,6 +40,7 @@ auto MetaPage::ReadMata() -> void {
 
         std::string table_name = std::string(meta_page_->data_+offset,len);
         offset += len;
+        LOG(INFO) << "Reading table name: " << table_name;
 
         page_id_t first_id = 0;
         memcpy(&first_id, meta_page_->data_ + offset, sizeof(page_id_t));
@@ -95,6 +96,12 @@ auto MetaPage::GetNameLen(const MetaItem &item) -> size_t {
     return len;
 }
 
+auto MetaPage::UpdateTableSize(size_t change_size) -> void {
+    table_size_ += change_size;
+    memcpy(meta_page_->data_+sizeof(size_t), &table_size_, sizeof(size_t));
+    meta_page_->is_dirty_ = true;
+    buffer_manager_->Flush(meta_page_->id_);
+}
 
 
 auto MetaPage::UpdateTableRows(entry_id table_id, size_t change_size) -> void {
@@ -133,7 +140,6 @@ auto MetaPage::AddTable(const MetaItem &item) -> void {
     items_[item.table_id_] = item;
     meta_page_->is_dirty_ = true;
 
-
     size_t need_size = ITEM_FIXED_SIZE + item.table_name_.size() ;
 
     if (last_point_ + need_size >= PAGE_SIZE) {
@@ -155,5 +161,6 @@ auto MetaPage::AddTable(const MetaItem &item) -> void {
     last_point_ += sizeof(page_id_t);
 
     meta_page_->is_dirty_ = true;
-    buffer_manager_->Flush(meta_page_->id_);
+
+    UpdateTableSize(1);
 }

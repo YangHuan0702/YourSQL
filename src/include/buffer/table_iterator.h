@@ -18,7 +18,7 @@ namespace YourSQL {
         // 正常构造函数，用于构造 begin 迭代器
         explicit TableIterator(std::shared_ptr<BufferManager> buffer_manager,
                               std::shared_ptr<MetaPage> meta_page,
-                              std::string table_name,
+                              std::string table_name,entry_id table_id,
                               Schema schema);
 
         ~TableIterator() = default;
@@ -46,6 +46,7 @@ namespace YourSQL {
         std::shared_ptr<MetaPage> meta_page_;
         std::string table_name_;
         Schema schema_{};
+        entry_id table_id_;
 
         page_id_t current_page_id_{0};
         uint32_t current_row_index_{0};

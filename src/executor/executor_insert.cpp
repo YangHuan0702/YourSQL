@@ -28,7 +28,7 @@ auto ExecutorInsert::Open() -> void {
         page = context_->buffer_manager_->FetchPage(item.last_page_id);
     }
 
-    page_ = new TablePage(page,read);
+    page_ = new TablePage(context_->meta_page_,table_id_,page,read);
     children_[0]->Open();
 }
 
