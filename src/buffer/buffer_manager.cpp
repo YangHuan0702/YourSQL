@@ -3,6 +3,8 @@
 //
 #include "buffer/buffer_manager.h"
 
+#include "common/util/page_id_util.h"
+
 using namespace YourSQL;
 
 
@@ -25,8 +27,6 @@ auto BufferManager::Flush(page_id_t page_id) -> void {
     }
 }
 
-
-
 auto BufferManager::Release(page_id_t page_id) -> void {
     std::lock_guard lock(mutex_);
     if (buffer_pages_.find(page_id) == buffer_pages_.end()) {
@@ -38,24 +38,30 @@ auto BufferManager::Release(page_id_t page_id) -> void {
 
 auto BufferManager::NewPage() -> Page * {
     std::lock_guard guard(mutex_);
+    Page *ans = nullptr;
     if (!free_pages_.empty()) {
         int frame = free_pages_.back();
         free_pages_.pop_back();
+
+        lru_manager_->Pin(frame);
+        ans = &frames_[frame];
         if (frames_[frame].is_dirty_) {
             disk_manager_->Write(&frames_[frame]);
         }
-        lru_manager_->Pin(frame);
-        return &frames_[frame];
     } else {
         int frame = lru_manager_->Evict();
         lru_manager_->Pin(frame);
-        Page *ans = &frames_[frame];
+        ans = &frames_[frame];
         if (ans->is_dirty_) {
             // write to disk
             disk_manager_->Write(ans);
         }
-        return ans;
     }
+    ans->Reset();
+    ans->id_ = PageIdUtil::GetNextPageId();
+    ans->is_dirty_ = false;
+
+    return ans;
 }
 
 

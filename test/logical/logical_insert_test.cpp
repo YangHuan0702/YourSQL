@@ -11,7 +11,6 @@
 #include "glog/logging.h"
 #include "parser/statement/insert_statement.h"
 #include "planner/planner.h"
-#include "planner/physical/physical_insert.h"
 #include "storage/posix_disk_manager.h"
 
 using namespace YourSQL;
