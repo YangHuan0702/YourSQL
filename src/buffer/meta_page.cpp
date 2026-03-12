@@ -8,8 +8,10 @@
 using namespace YourSQL;
 
 auto MetaPage::Init() -> void {
+    meta_page_->Reset();
     version_ = META_INIT_VERSION;
     table_size_ = META_INIT_TABLE_SIZE;
+    last_point_ = META_INIT_LAST_POINT;
 
     memcpy(meta_page_->data_,&version_,sizeof(size_t));
     memcpy(meta_page_->data_+sizeof(size_t),&table_size_,sizeof(size_t));
@@ -22,11 +24,12 @@ auto MetaPage::Init() -> void {
 auto MetaPage::ReadMata() -> void {
     memcpy(&version_,meta_page_->data_,sizeof(size_t));
     memcpy(&table_size_,meta_page_->data_ + sizeof(size_t),sizeof(size_t));
+    memcpy(&last_point_,meta_page_->data_ + sizeof(size_t)*2,sizeof(size_t));
     if (table_size_ == 0) {
         return ;
     }
 
-    size_t offset = sizeof(size_t) + sizeof(size_t);
+    size_t offset = sizeof(size_t) + sizeof(size_t)+ sizeof(size_t);
     for (size_t i = 0; i < table_size_; i++) {
 
         size_t cur_offset = offset;
@@ -35,7 +38,7 @@ auto MetaPage::ReadMata() -> void {
         memcpy(&len, meta_page_->data_ + offset, sizeof(size_t));
         offset += sizeof(size_t);
 
-        std::string table_name = std::string(meta_page_->data_,len);
+        std::string table_name = std::string(meta_page_->data_+offset,len);
         offset += len;
 
         page_id_t first_id = 0;

@@ -39,8 +39,9 @@ auto BufferManager::Release(page_id_t page_id) -> void {
 auto BufferManager::NewPage() -> Page * {
     std::lock_guard guard(mutex_);
     Page *ans = nullptr;
+    int frame = 0;
     if (!free_pages_.empty()) {
-        int frame = free_pages_.back();
+        frame = free_pages_.back();
         free_pages_.pop_back();
 
         lru_manager_->Pin(frame);
@@ -49,7 +50,7 @@ auto BufferManager::NewPage() -> Page * {
             disk_manager_->Write(&frames_[frame]);
         }
     } else {
-        int frame = lru_manager_->Evict();
+        frame = lru_manager_->Evict();
         lru_manager_->Pin(frame);
         ans = &frames_[frame];
         if (ans->is_dirty_) {
@@ -60,7 +61,7 @@ auto BufferManager::NewPage() -> Page * {
     ans->Reset();
     ans->id_ = PageIdUtil::GetNextPageId();
     ans->is_dirty_ = false;
-
+    buffer_pages_[ans->id_] = frame;
     return ans;
 }
 

@@ -13,7 +13,7 @@ namespace YourSQL {
 
 #define INVALID_PAGE_ID 0
 
-#define DATA_PATH "data"
+#define DATA_PATH "/data"
 #define DATA_FILE_NAME "ydb.sdb"
 
 }
