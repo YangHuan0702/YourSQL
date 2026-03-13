@@ -56,10 +56,10 @@ Storage Engine
 
 ## 🛠️ 当前功能
 
-* [ ] 基础 SQL 支持（CREATE / INSERT / SELECT）
-* [ ] 行存储（Heap Table）
-* [ ] 基础执行器
-* [ ] WHERE 条件过滤
+* [√] 基础 SQL 支持（CREATE / INSERT / SELECT）
+* [√] 行存储（Heap Table）
+* [√] 基础执行器
+* [√] WHERE 条件过滤
 * [ ] 索引
 * [ ] WAL
 * [ ] Crash Recovery
