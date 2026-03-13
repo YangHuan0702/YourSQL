@@ -31,7 +31,7 @@ TableIterator::TableIterator(std::shared_ptr<BufferManager> buffer_manager,
 
     // 加载第一个页面
     LoadPage();
-    current_row_index_ = 0;
+    current_row_index_ = 1;
 }
 
 auto TableIterator::operator*() -> Tuple {
@@ -39,15 +39,13 @@ auto TableIterator::operator*() -> Tuple {
         throw std::runtime_error("TableIterator::operator*() is not valid");
     }
 
-    // TODO： 这是哪门子的tuple?
-
     RID rid;
     rid.page_id_ = current_page_id_;
     rid.row_id_ = current_row_index_;
 
     Tuple tuple;
     tuple.schema_ = schema_;
-    tuple.data_ = current_table_page_->GetPage()->data_;
+    current_table_page_->GetTuple(rid, &tuple);
     return tuple;
 }
 
@@ -70,7 +68,7 @@ auto TableIterator::operator++() -> TableIterator & {
             // 移动到下一页
             current_page_id_ = next_page_id;
             LoadPage();
-            current_row_index_ = 0;
+            current_row_index_ = 1;
         }
     } else {
         buffer_manager_->TouchPage(current_page_id_);

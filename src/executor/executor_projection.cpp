@@ -21,6 +21,7 @@ auto ExecutorProjection::Next(Tuple *tuple) -> bool {
     for (entry_id column_id : column_ids_) {
         values.push_back(row.values_[column_id]);
     }
+    tuple->schema_ = input.schema_;
     tuple->SetQueryResult(values);
     return true;
 }

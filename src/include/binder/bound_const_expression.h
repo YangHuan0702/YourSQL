@@ -9,7 +9,7 @@ namespace YourSQL {
     public:
         explicit BoundConstExpression(Value value, ColumnTypes type) : BoundExpression(ColumnTypes::INVALID,
                                                                            ExpressionType::CONST),
-                                                                       type_(type), value_(std::move(value)) {
+                                                                       type_(type), value_(value) {
         }
 
         ~BoundConstExpression() override = default;

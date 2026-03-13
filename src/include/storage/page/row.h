@@ -11,8 +11,8 @@ namespace YourSQL {
 
     class Row {
     public:
-        explicit Row(Schema &schema) : schema_(schema) {}
-        explicit Row(Schema &schema, const std::vector<Value> &values) : schema_(schema),values_(values){}
+        explicit Row(const Schema &schema) : schema_(schema) {}
+        explicit Row(const Schema &schema, const std::vector<Value> &values) : schema_(schema),values_(values){}
         ~Row() =default;
 
         [[nodiscard]] auto Serialize() -> char* ;

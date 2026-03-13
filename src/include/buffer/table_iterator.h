@@ -49,7 +49,7 @@ namespace YourSQL {
         entry_id table_id_;
 
         page_id_t current_page_id_{0};
-        uint32_t current_row_index_{0};
+        uint32_t current_row_index_{1};
         uint32_t current_page_num_rows_{0};
         std::unique_ptr<TablePage> current_table_page_;
 

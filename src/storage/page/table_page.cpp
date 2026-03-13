@@ -47,7 +47,7 @@ TablePage::TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page 
 
 
 
-auto TablePage::GetTuple(const RID &rid, Tuple *tuple) {
+auto TablePage::GetTuple(const RID &rid, Tuple *tuple) -> void {
     std::lock_guard lock(mutex_);
     size_t offset = PAGE_SIZE - rid.row_id_ * SLOT_SIZE;
 
@@ -56,32 +56,52 @@ auto TablePage::GetTuple(const RID &rid, Tuple *tuple) {
     char deleted = 0;
     memcpy(&slot_offset,page_->data_+offset,sizeof(uint16_t));
     memcpy(&size,page_->data_+offset+sizeof(uint16_t),sizeof(uint16_t));
-    memcpy(&deleted,page_->data_+offset+sizeof(uint16_t) * 2 + 1,sizeof(char));
+    memcpy(&deleted,page_->data_+offset+sizeof(uint16_t) * 2,sizeof(char));
 
     if (!deleted) {
         auto target = new char[size];
         memcpy(target,page_->data_+slot_offset,size);
         tuple->data_ = target;
+        tuple->tuple_size_ = size;
+    } else {
+        // 行已被删除，返回空数据
+        tuple->data_ = nullptr;
+        tuple->tuple_size_ = 0;
     }
 }
 
 
 auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
     std::lock_guard lock(mutex_);
-    // TODO: 计算tuple_size
     if (tuple.tuple_size_ + SLOT_SIZE > free_size) {
         return false;
     }
 
     int cur_slot_point = PAGE_SIZE - (SLOT_SIZE * header_.num_rows);
-    uint16_t data_point = cur_slot_point - free_size;
-    memcpy(page_->data_ + data_point, tuple.data_, tuple.tuple_size_);
-
     int new_slot_offset = cur_slot_point - SLOT_SIZE;
-    memcpy(page_->data_ + new_slot_offset, &data_point, sizeof(uint16_t));
-    memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t), &tuple.tuple_size_, sizeof(uint16_t));
+
     char del = 0;
-    memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t) * 2, &del, sizeof(char));
+    if (header_.num_rows == 0) {
+        uint16_t tuple_offset = HEADER_SIZE;
+        uint16_t size = tuple.tuple_size_;
+        memcpy(page_->data_ + new_slot_offset, &tuple_offset, sizeof(uint16_t));
+        memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t), &size, sizeof(uint16_t));
+        memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t)*2, &del, sizeof(char));
+
+        memcpy(page_->data_+tuple_offset, tuple.data_, tuple.tuple_size_);
+    } else {
+
+        uint16_t prev_tuple_offset = 0;
+        uint16_t prev_size = 0;
+        memcpy(&prev_tuple_offset, page_->data_ + cur_slot_point, sizeof(uint16_t));
+        memcpy(&prev_size, page_->data_ + cur_slot_point + sizeof(uint16_t), sizeof(uint16_t));
+
+        uint16_t now_offset = prev_tuple_offset + prev_size;
+        memcpy(page_->data_ + new_slot_offset, &now_offset, sizeof(uint16_t));
+        memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t), &tuple.tuple_size_, sizeof(uint16_t));
+        memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t)*2, &del, sizeof(char));
+        memcpy(page_->data_+now_offset, tuple.data_, tuple.tuple_size_);
+    }
 
     free_size -= SLOT_SIZE + tuple.tuple_size_;
     header_.num_rows += 1;

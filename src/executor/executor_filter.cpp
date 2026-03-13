@@ -13,12 +13,12 @@ auto ExecutorFilter::Next(Tuple *tuple) -> bool {
     Tuple candidate;
     while (children_[0]->Next(&candidate)) {
         Value bl = expression_->Evaluate(candidate);
-        if (!bl.GetBool()) {
-            return false;
+        if (bl.GetBool()) {  // 如果条件满足，返回这个 tuple
+            tuple->Copy(candidate);
+            return true;
         }
     }
-    tuple->Copy(candidate);
-    return true;
+    return false;
 }
 
 auto ExecutorFilter::Open() -> void {

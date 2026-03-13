@@ -18,7 +18,7 @@ auto Row::Deserialize(const Tuple &tuple) -> void {
     size_t offset = meta_size;
     for (size_t i = 0; i < schema_.columns_.size(); i++) {
         if (data[i] == '0') {
-            values_.emplace_back(true);
+            values_.emplace_back();
         } else {
             switch (schema_.columns_[i].column_types) {
                 case ColumnTypes::BOOL: {
@@ -61,7 +61,8 @@ auto Row::GetValue(size_t index) -> Value {
     if (index >= schema_.columns_.size()) {
         throw std::invalid_argument("index out of range");
     }
-    return values_[index];
+    Value r = values_[index];
+    return r.IsNull() ? schema_.columns_[index].default_value_ : r;
 }
 
 auto Row::GetValue(const std::string &column_name) -> Value {

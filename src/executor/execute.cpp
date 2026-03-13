@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iomanip>
 #include "storage/page/tuple.h"
+#include "storage/page/row.h"
 
 using namespace YourSQL;
 
@@ -44,11 +45,25 @@ auto Execute::PrintTuple(const Tuple &tuple) -> void {
         header_printed_ = true;
     }
 
+    // 确定使用的数据源
+    std::vector<Value> values_to_print;
+    Schema schema_to_use = tuple.schema_;
+
+    if (!tuple.query_result_.empty()) {
+        // 有 Projection，使用 query_result_
+        values_to_print = tuple.query_result_;
+    } else if (tuple.data_ != nullptr) {
+        // 无 Projection，需要从 tuple.data_ 反序列化
+        Row row(schema_to_use);
+        row.Deserialize(tuple);
+        values_to_print = row.values_;
+    }
+
     // 打印数据行
     std::cout << "|";
-    for (size_t i = 0; i < tuple.query_result_.size(); ++i) {
-        const auto &value = tuple.query_result_[i];
-        const auto &column = tuple.schema_.columns_[i];
+    for (size_t i = 0; i < values_to_print.size(); ++i) {
+        const auto &value = values_to_print[i];
+        const auto &column = schema_to_use.columns_[i];
         size_t width = column.name_.length();
 
         std::cout << " ";

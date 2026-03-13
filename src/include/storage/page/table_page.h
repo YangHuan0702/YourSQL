@@ -16,6 +16,7 @@ namespace YourSQL {
 #define SLOT_SIZE (sizeof(uint16_t) * 2 + 1)
 #define HEADER_SIZE (NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(page_id_t) * 2)
 
+
     struct TableHeader {
         uint16_t version;
         uint32_t num_rows;
@@ -29,7 +30,23 @@ namespace YourSQL {
         bool deleted;
     };
 
-
+    /**
+     * format:
+     * ------------------------------------------------------
+     * | header | tuple-1 | tuple-2 | tuple-3 | ... | slots |
+     * ------------------------------------------------------
+     *
+     * header:
+     * -----------------------------------------------
+     * | version | num_rows | page_id | next_page_id |
+     * -----------------------------------------------
+     *
+     * slot:
+     * ------------------------------------
+     * | tuple_offset | size | is_deleted |
+     * ------------------------------------
+     *
+     */
     class TablePage {
     public:
         explicit TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page *page,bool read);
@@ -40,7 +57,7 @@ namespace YourSQL {
         auto InsertTuple(const Tuple &tuple,RID *rid) -> bool;
         auto updateTuple(const Tuple &tuple,const RID &rid) -> void;
         auto DeleteTuple(const RID &rid) -> void;
-        auto GetTuple(const RID &rid, Tuple *tuple);
+        auto GetTuple(const RID &rid, Tuple *tuple) -> void;
         auto GetPage() const -> Page* {
             return page_;
         }

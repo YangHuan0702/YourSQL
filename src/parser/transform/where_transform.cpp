@@ -13,8 +13,11 @@ auto Transformer::transformWhere(hsql::Expr *expr) -> std::unique_ptr<BaseExpres
             return transformOperator(expr);
         case hsql::kExprColumnRef:
             return transformColumnExpr(expr);
-        case hsql::kExprLiteralString:
-            return transformConstExpr(ColumnTypes::VARCHAR,Value(expr->name));
+        case hsql::kExprLiteralString: {
+            std::string name = std::string(expr->name);
+            Value strValue= Value(name);
+            return transformConstExpr(ColumnTypes::VARCHAR,strValue);
+        }
         case hsql::kExprLiteralInt:
             return transformConstExpr(ColumnTypes::INTEGER,Value(static_cast<int>(expr->ival)));
         default:

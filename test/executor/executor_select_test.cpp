@@ -16,7 +16,7 @@ using namespace YourSQL;
 
 TEST(Executor, ExecutorSelectTest) {
     std::string sql =
-            "select name,age,email from user where name != 'yanghuan' and age < 20 or del = '0' group by age limit 0 offset 10";
+            "select name,age,email from user where name != 'yanghuan' and age > 20 or del = 0 group by age limit 0 offset 10";
     Parser parser;
     parser.ParserSQL(sql);
 
