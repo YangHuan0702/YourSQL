@@ -5,6 +5,7 @@ add_subdirectory(planner)
 add_subdirectory(storage)
 add_subdirectory(buffer)
 add_subdirectory(executor)
+add_subdirectory(index)
 
 add_library(YourDB SHARED ${ALL_OBJECT_FILES})
 

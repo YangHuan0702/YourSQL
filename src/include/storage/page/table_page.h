@@ -52,7 +52,7 @@ namespace YourSQL {
         explicit TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page *page,bool read);
         ~TablePage() = default;
 
-        auto GetCount() -> uint32_t;
+        auto GetCount() const -> uint32_t;
 
         auto InsertTuple(const Tuple &tuple,RID *rid) -> bool;
         auto updateTuple(const Tuple &tuple,const RID &rid) -> void;

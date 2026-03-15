@@ -6,7 +6,6 @@
 using namespace YourSQL;
 
 
-//TODO: 根据实际情况来确定是否需要读取数据还是初始化header
 TablePage::TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page *page,bool read) : meta_page_(std::move(meta_page)),table_id_(table_id),page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
     char *data = page->data_;
     if (read) {
@@ -149,7 +148,7 @@ auto TablePage::updateTuple(const Tuple &tuple, const RID &rid) -> void {
 }
 
 
-auto TablePage::GetCount() -> uint32_t {
+auto TablePage::GetCount() const -> uint32_t {
     return header_.num_rows;
 }
 

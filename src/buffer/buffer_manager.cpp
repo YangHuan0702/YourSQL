@@ -34,6 +34,16 @@ auto BufferManager::Release(page_id_t page_id) -> void {
     }
     int frame_id = buffer_pages_[page_id];
     lru_manager_->UnPin(frame_id);
+
+    if (frames_[frame_id].is_dirty_) {
+        disk_manager_->Write(&frames_[frame_id]);
+        frames_[frame_id].is_dirty_ = false;
+    }
+
+    if (lru_manager_->GetPinCount(frame_id) == 0) {
+        free_pages_.insert(free_pages_.begin(),frame_id);
+        buffer_pages_.erase(page_id);
+    }
 }
 
 auto BufferManager::NewPage() -> Page * {
