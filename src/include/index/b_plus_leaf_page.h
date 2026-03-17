@@ -45,7 +45,7 @@ namespace YourSQL {
 
         auto Lookup(const KeyType &key, std::vector<ValType> &result) const -> bool;
 
-        auto Remove(const KeyType &key, const ValType &value) -> int;
+        auto Remove(const KeyType &key) -> int;
 
         auto GetUsedBytes() const -> size_t;
 

@@ -116,6 +116,7 @@ auto BufferManager::FetchPage(page_id_t page_id) -> Page * {
             buffer_pages_[page_id] = frame;
         }
     }
+    ans->Reset();
     ans->SetPageId(page_id);
     return ans;
 }

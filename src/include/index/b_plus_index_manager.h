@@ -26,12 +26,19 @@ namespace YourSQL {
 
     private:
         auto FindLeafPage(const KeyType &key,bool leaf_most) -> page_id_t;
+
+        auto AdjustRoot(IndexPage *leaf_node) -> void;
+        auto Redistribute(IndexPage *sibling,IndexPage *leaf_node,BPlusInternalPage<KeyType>* parent,bool ) -> void;
+        auto Coalesce(IndexPage* sibling,IndexPage*leaf_node,BPlusInternalPage<KeyType>* parent, int target_index);
+        auto HandleUnderflow(BPlusLeafPage<KeyType,ValType>* leaf_node) -> void;
+        auto UpdateParentId(page_id_t,page_id_t new_parent_id) const -> void;
+        auto GetParentId(page_id_t) const -> page_id_t;
         auto SplitLeaf(BPlusLeafPage<KeyType,ValType> &leaf) -> page_id_t;
         auto SplitInternal(BPlusInternalPage<KeyType> &internal_page);
         auto InsertInfoParent(page_id_t old_page,const KeyType &middle_key,page_id_t new_page) -> void;
 
         std::shared_ptr<BufferManager> buffer_manager_;
-        page_id_t root_page_id_{};
+        page_id_t root_page_id_{INVALID_PAGE_ID};
     };
 
 }

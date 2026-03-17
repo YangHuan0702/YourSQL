@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <utility>
+#include <vector>
 
 #include "index_page.h"
 
@@ -10,6 +11,9 @@ namespace YourSQL {
 
     template <class KeyType>
     class BPlusInternalPage : public IndexPage {
+
+#define ITEM_SIZE (sizeof(KeyType) + sizeof(page_id_t))
+
     public:
         using MappingType = std::pair<KeyType,page_id_t>;
         explicit BPlusInternalPage(Page *page) : IndexPage(page) {}
@@ -26,7 +30,7 @@ namespace YourSQL {
         auto Remove(int index) -> void;
 
     private:
-        auto Array() -> MappingType *;
+        std::vector<MappingType> array_;
     };
 
 }

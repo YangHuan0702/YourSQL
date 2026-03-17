@@ -44,7 +44,7 @@ auto BPlusLeafPage<KeyType, ValType>::SetNextPageId(page_id_t next_page_id) cons
 }
 
 template<class KeyType, class ValType>
-auto BPlusLeafPage<KeyType, ValType>::Remove(const KeyType &key, const ValType &value) -> int {
+auto BPlusLeafPage<KeyType, ValType>::Remove(const KeyType &key) -> int {
     if (array_.empty()) return 0;
     char *data_start = page_->data_ + sizeof(IndexPageHeader) + sizeof(LeafExtraHeader);
     char *current = data_start;
@@ -65,7 +65,7 @@ auto BPlusLeafPage<KeyType, ValType>::Remove(const KeyType &key, const ValType &
         std::memcpy(&current_val, current, val_len);
         current += val_len;
 
-        if (current_key == key && current_val == value) {
+        if (current_key == key) {
             size_t total_size = sizeof(size_t) + key_len + sizeof(size_t) + val_len;
             char *elem_start = current - total_size;
 
