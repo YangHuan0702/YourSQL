@@ -6,6 +6,8 @@
 
 namespace YourSQL {
 
+    typedef uint32_t tx_id_t;
+
     typedef size_t entry_id;
 
     typedef entry_id page_id_t;

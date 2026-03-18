@@ -6,7 +6,7 @@
 
 namespace YourSQL {
 
-#define PRODUCT_NAME "YourDB"
+#define PRODUCT_NAME "YourSQL"
 
     constexpr page_id_t META_PAGE_ID = 0;
 
