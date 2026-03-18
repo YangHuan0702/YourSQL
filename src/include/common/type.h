@@ -12,5 +12,7 @@ namespace YourSQL {
 
     typedef entry_id row_id_t;
 
+    typedef entry_id tx_id_t;
+
 }
 
