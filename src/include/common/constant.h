@@ -14,4 +14,8 @@ namespace YourSQL {
     constexpr size_t META_INIT_TABLE_SIZE = 0;
     constexpr size_t META_INIT_LAST_POINT = (sizeof(size_t) * 3);
 
+
+    constexpr  tx_id_t INVALID_TX_ID = 0;
+    constexpr  undo_id_t INVALID_UNDO_ID = 0;
+    constexpr  lsn_t INVALID_LSN = 0;
 }

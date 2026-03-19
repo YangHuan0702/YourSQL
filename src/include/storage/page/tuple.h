@@ -15,6 +15,7 @@ namespace YourSQL {
     };
 
 
+
     class Tuple {
     public:
         Tuple() = default;

@@ -3,17 +3,35 @@
 //
 
 #pragma once
+#include <vector>
+#include <memory>
+
+#include "read_view.h"
+#include "common/constant.h"
+#include "common/type.h"
+#include "common/types/isolation_level.h"
+#include "storage/r_id.h"
 
 namespace YourSQL {
-
-    enum class TransactionState {
+    enum class TransactionState:uint8_t {
         COMMITTED,
         ABORTED,
-        IN_PROGRESS
+        IN_PROGRESS,
+        ACTIVE
     };
 
     class Transaction {
 
-    };
+    public:
+        tx_id_t tx_id_{INVALID_TX_ID};
+        TransactionState state_{TransactionState::IN_PROGRESS};
+        IsolationLevel isolation_level_{IsolationLevel::REPEATABLE_READ};
 
+        bool autocommit_{false};
+        bool read_only_{false};
+
+        std::shared_ptr<ReadView> read_view_;
+        std::vector<undo_id_t> undo_ids_;
+        std::vector<RID> write_set_;
+    };
 }

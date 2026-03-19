@@ -6,6 +6,8 @@ add_subdirectory(storage)
 add_subdirectory(buffer)
 add_subdirectory(executor)
 add_subdirectory(index)
+add_subdirectory(log)
+add_subdirectory(transaction)
 
 add_library(YourDB SHARED ${ALL_OBJECT_FILES})
 

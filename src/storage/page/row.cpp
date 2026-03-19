@@ -13,9 +13,15 @@ auto Row::Deserialize(const Tuple &tuple) -> void {
     auto data = tuple.data_;
     this->schema_ = tuple.schema_;
 
+    // init header
+    memcpy(&header_.trx_id_,data, sizeof(tx_id_t));
+    memcpy(&header_.roll_ptr_,data + sizeof(tx_id_t), sizeof(undo_id_t));
+    memcpy(&header_.flags_,data + sizeof(tx_id_t) + sizeof(undo_id_t), sizeof(uint16_t));
+
+
     size_t meta_size = schema_.columns_.size();
 
-    size_t offset = meta_size;
+    size_t offset = PAYLOAD_OFFSET + meta_size;
     for (size_t i = 0; i < schema_.columns_.size(); i++) {
         if (data[i] == '0') {
             values_.emplace_back();
@@ -105,10 +111,18 @@ auto Row::Serialize() -> char * {
         }
     }
 
-    char *data = new char[size];
-    memcpy(data, meta, schema_.columns_.size());
+    size_t header_offset = 0;
+    char *data = new char[PAYLOAD_OFFSET + size];
+    memcpy(data + header_offset,&header_.trx_id_,sizeof(tx_id_t));
+    header_offset += sizeof(tx_id_t);
+    memcpy(data + header_offset,&header_.roll_ptr_,sizeof(undo_id_t));
+    header_offset += sizeof(undo_id_t);
+    memcpy(data + header_offset,&header_.flags_,sizeof(uint16_t));
+    header_offset += sizeof(uint16_t);
+    memcpy(data + header_offset, meta, schema_.columns_.size());
     delete [] meta;
-    size_t begin_offset = schema_.columns_.size();
+
+    size_t begin_offset = PAYLOAD_OFFSET + schema_.columns_.size();
     for (size_t i = 0; i < schema_.columns_.size(); ++i) {
         if (!values_[i].IsNull()) {
             switch (schema_.columns_[i].column_types) {

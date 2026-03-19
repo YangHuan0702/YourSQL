@@ -11,6 +11,8 @@ namespace YourSQL {
 #define PAGE_HEADER_MAGIC 0xDEADBEEF
 #define MAX_OPEN_FILES 512
 
+#define LOG_BUFFER_SIZE 8192
+
 #define INVALID_PAGE_ID 0
 
 #define DATA_PATH "/data"

@@ -5,8 +5,10 @@
 #pragma once
 #include <atomic>
 #include <mutex>
+#include <unordered_map>
 #include <unordered_set>
 
+#include "transaction.h"
 #include "common/type.h"
 
 namespace YourSQL {
@@ -29,7 +31,8 @@ namespace YourSQL {
     private:
         std::atomic<tx_id_t> next_txid_{1};
         std::mutex mutex_;
-        std::pmr::unordered_set<tx_id_t> active_trxs;
+        std::unordered_map<tx_id_t, std::shared_ptr<Transaction>> active_txns;
+        std::unordered_map<tx_id_t,TransactionState> txn_state_;
     };
 
 }

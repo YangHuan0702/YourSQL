@@ -9,10 +9,19 @@ using namespace YourSQL;
 TablePage::TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page *page,bool read) : meta_page_(std::move(meta_page)),table_id_(table_id),page_(page),free_size(PAGE_SIZE - HEADER_SIZE) {
     char *data = page->data_;
     if (read) {
-        memcpy(&header_.version, data, NUM_ROWS_OFFSET);
+        size_t header_offset = 0;
+        memcpy(&header_.version, data + header_offset, sizeof(uint16_t));
+        header_offset += sizeof(uint16_t);
         memcpy(&header_.num_rows,data+NUM_ROWS_OFFSET,sizeof(uint32_t));
-        memcpy(&header_.page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t),sizeof(uint64_t));
-        memcpy(&header_.next_page_id,data+NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(uint64_t),sizeof(uint64_t));
+        header_offset += sizeof(uint32_t);
+
+        memcpy(&header_.page_id,data+header_offset,sizeof(page_id_t));
+        header_offset += sizeof(page_id_t);
+
+        memcpy(&header_.next_page_id,data+header_offset,sizeof(page_id_t));
+        header_offset += sizeof(page_id_t);
+
+        memcpy(&header_.lsn_,data+header_offset,sizeof(lsn_t));
 
         uint32_t slot_count_size = SLOT_SIZE * header_.num_rows;
         uint32_t tuple_count_size = 0;
@@ -41,9 +50,7 @@ TablePage::TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page 
 
         page_->is_dirty_ = true;
     }
-
 }
-
 
 
 auto TablePage::GetTuple(const RID &rid, Tuple *tuple) -> void {
@@ -79,13 +86,11 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
     int cur_slot_point = PAGE_SIZE - (SLOT_SIZE * header_.num_rows);
     int new_slot_offset = cur_slot_point - SLOT_SIZE;
 
-    char del = 0;
     if (header_.num_rows == 0) {
         uint16_t tuple_offset = HEADER_SIZE;
         uint16_t size = tuple.tuple_size_;
         memcpy(page_->data_ + new_slot_offset, &tuple_offset, sizeof(uint16_t));
         memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t), &size, sizeof(uint16_t));
-        memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t)*2, &del, sizeof(char));
 
         memcpy(page_->data_+tuple_offset, tuple.data_, tuple.tuple_size_);
     } else {
@@ -98,7 +103,6 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
         uint16_t now_offset = prev_tuple_offset + prev_size;
         memcpy(page_->data_ + new_slot_offset, &now_offset, sizeof(uint16_t));
         memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t), &tuple.tuple_size_, sizeof(uint16_t));
-        memcpy(page_->data_ + new_slot_offset + sizeof(uint16_t)*2, &del, sizeof(char));
         memcpy(page_->data_+now_offset, tuple.data_, tuple.tuple_size_);
     }
 
@@ -119,11 +123,7 @@ auto TablePage::updateTuple(const Tuple &tuple, const RID &rid) -> void {
     Slot slot{};
     memcpy(&slot.offset, page_->data_ + slot_offset, sizeof(uint16_t));
     memcpy(&slot.size, page_->data_ + slot_offset + sizeof(uint16_t), sizeof(uint16_t));
-    memcpy(&slot.deleted, page_->data_ + slot_offset + sizeof(uint16_t)*2 + 1, sizeof(char));
 
-    if (slot.deleted) {
-        return;
-    }
 
     size_t prev_size = 0;
     for (size_t i = 1; i < rid.row_id_; ++i) {

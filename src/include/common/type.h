@@ -12,7 +12,9 @@ namespace YourSQL {
 
     typedef entry_id row_id_t;
 
-    typedef entry_id tx_id_t;
+    typedef uint64_t tx_id_t;
+    typedef uint64_t lsn_t;
+    typedef uint64_t undo_id_t;
 
 }
 
