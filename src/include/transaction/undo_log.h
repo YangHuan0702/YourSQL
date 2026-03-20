@@ -3,9 +3,8 @@
 //
 
 #pragma once
-#include "common/constant.h"
+#include "buffer/page.h"
 #include "common/type.h"
-#include "storage/r_id.h"
 #include "storage/page/tuple.h"
 
 namespace YourSQL {
@@ -18,24 +17,24 @@ namespace YourSQL {
     struct UndoPointer {
         page_id_t page_id_;
         uint32_t slot;
+
+        auto IsNull() const -> bool { return page_id_ == 0; }
     };
 
+    struct UndoLogRecord {
+        UndoPointer old_roll_ptr_;
+        tx_id_t old_trx_id_;
+        uint32_t payload_size_;
+        char payload_[0];
+    };
 
-    class UndoLogRecord {
+    class UndoLogPage {
     public:
-        undo_id_t undo_id_{INVALID_UNDO_ID};
-        undo_id_t prev_undo_id_{INVALID_UNDO_ID};
+        explicit UndoLogPage(Page *page) : page_(page) {}
+        ~UndoLogPage()  = default;
 
-        tx_id_t trx_id_{INVALID_TX_ID};
-        UndoType undo_type_{};
-
-        entry_id table_id_;
-        RID rid_;
-
-        tx_id_t old_trx_id_{INVALID_TX_ID};
-        undo_id_t old_roll_ptr_{INVALID_UNDO_ID};
-        uint16_t old_flags_{0};
-
-        Tuple before_image_;
+        Page *page_;
     };
+
+
 }

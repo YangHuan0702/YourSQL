@@ -18,14 +18,17 @@ namespace YourSQL {
         explicit TransactionManager() = default;
         ~TransactionManager() = default;
 
-
         auto GetNextTxId() -> tx_id_t {
             return next_txid_.fetch_add(1);
         }
 
-        auto Begin() -> tx_id_t ;
+        auto Begin() -> std::shared_ptr<Transaction> ;
         auto Commit(tx_id_t) -> void;
-        auto Abort() -> void;
+        auto Abort(tx_id_t tx_id) -> void;
+        auto GetState(tx_id_t id) const -> std::optional<TransactionState> {
+            return txn_state_.find(id) == txn_state_.end() ? std::nullopt : std::optional(txn_state_.at(id));
+        }
+        auto CreateReadView(tx_id_t id) -> std::shared_ptr<ReadView>;
 
 
     private:
