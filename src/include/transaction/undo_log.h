@@ -5,6 +5,7 @@
 #pragma once
 #include "buffer/page.h"
 #include "common/type.h"
+#include "common/util/page_id_util.h"
 #include "storage/page/tuple.h"
 
 namespace YourSQL {
@@ -28,11 +29,35 @@ namespace YourSQL {
         char payload_[0];
     };
 
+    /**
+     * undo-log format:
+     * -----------------------------------------------------------------
+     * | page_id | lsn_ | free_offset | record | record | record | ... |
+     * -----------------------------------------------------------------
+     *
+     *
+     * undo-log record format :
+     * --------------------------------------------------------------------
+     * | old_roll_ptr(page_id,slot) | old_trx_id | payload_size | payload |
+     * --------------------------------------------------------------------
+     */
     class UndoLogPage {
     public:
         explicit UndoLogPage(Page *page) : page_(page) {}
         ~UndoLogPage()  = default;
 
+        auto Init() -> void;
+        auto AppendRecord(const UndoLogRecord &record) -> bool;
+        auto ReadRecord(uint32_t offset, UndoLogRecord *record) const -> void;
+
+        auto GetFreeOffset() const -> uint32_t {
+            return free_offset_;
+        }
+
+
+        page_id_t page_id_{};
+        lsn_t lsn_{};
+        uint32_t free_offset_{};
         Page *page_;
     };
 
