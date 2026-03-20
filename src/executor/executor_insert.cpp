@@ -42,7 +42,8 @@ auto ExecutorInsert::Open() -> void {
 
 auto ExecutorInsert::Next(Tuple *tuple) -> bool {
     while (children_[0]->Next(tuple)) {
-        RID rid;
+        RID rid{};
+
         // 计算Page空间，如果空间不够还需要创建Page
         page_->InsertTuple(*tuple,&rid);
         context_->buffer_manager_->Flush(page_->GetPage()->id_);

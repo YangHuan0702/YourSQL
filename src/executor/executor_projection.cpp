@@ -17,6 +17,7 @@ auto ExecutorProjection::Next(Tuple *tuple) -> bool {
 
     Row row(input.schema_);
     row.Deserialize(input);
+
     std::vector<Value> values;
     for (entry_id column_id : column_ids_) {
         values.push_back(row.values_[column_id]);

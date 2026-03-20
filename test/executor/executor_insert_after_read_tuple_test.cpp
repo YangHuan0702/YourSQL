@@ -14,7 +14,6 @@
 
 using namespace YourSQL;
 
-#define SLOT_SIZE (sizeof(uint16_t) * 2 + 1)
 
 TEST(Executor,InsertAfterReadTupleTest) {
     auto disk = std::make_unique<PosixDiskManager>();

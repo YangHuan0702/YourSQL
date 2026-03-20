@@ -11,18 +11,15 @@
 using namespace YourSQL;
 
 auto Execute::PrintTuple(const Tuple &tuple) -> void {
-    // 第一次打印时，输出表头
     if (!header_printed_) {
         current_schema_ = tuple.schema_;
         std::vector<size_t> column_widths;
 
-        // 计算每列的宽度（取列名和数据最大宽度）
         for (const auto &column : tuple.schema_.columns_) {
             size_t width = column.name_.length();
             column_widths.push_back(width);
         }
 
-        // 打印表头
         std::cout << "+";
         for (size_t width : column_widths) {
             std::cout << std::string(width + 2, '-') << "+";
@@ -45,15 +42,12 @@ auto Execute::PrintTuple(const Tuple &tuple) -> void {
         header_printed_ = true;
     }
 
-    // 确定使用的数据源
     std::vector<Value> values_to_print;
     Schema schema_to_use = tuple.schema_;
 
     if (!tuple.query_result_.empty()) {
-        // 有 Projection，使用 query_result_
         values_to_print = tuple.query_result_;
     } else if (tuple.data_ != nullptr) {
-        // 无 Projection，需要从 tuple.data_ 反序列化
         Row row(schema_to_use);
         row.Deserialize(tuple);
         values_to_print = row.values_;

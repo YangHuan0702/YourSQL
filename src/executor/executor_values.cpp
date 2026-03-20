@@ -38,6 +38,14 @@ auto ExecutorValues::Open() -> void {
 
 auto ExecutorValues::Next(Tuple *tuple) -> bool {
     if (used_) return false;
+    row->SetTrxId(context_->transaction_->tx_id_);
+    row->SetFlags(0);
+
+    UndoPointer undo_pointer{};
+    undo_pointer.page_id_ = INVALID_TX_ID;
+    undo_pointer.slot = 0;
+
+    row->SetRollPtr(undo_pointer);
     tuple->data_ = row->Serialize();
     tuple->tuple_size_ = row->use_size_;
     tuple->schema_ = row->schema_;

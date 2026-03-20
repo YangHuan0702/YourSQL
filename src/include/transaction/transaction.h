@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "read_view.h"
+#include "undo_log.h"
 #include "common/constant.h"
 #include "common/type.h"
 #include "common/types/isolation_level.h"
@@ -31,7 +32,7 @@ namespace YourSQL {
         bool read_only_{false};
 
         std::shared_ptr<ReadView> read_view_;
-        std::vector<undo_id_t> undo_ids_;
+        std::vector<UndoPointer> undo_ids_;
         std::vector<RID> write_set_;
     };
 }

@@ -1,3 +1,4 @@
-add_library(yoursql_executor OBJECT executor_factory.cpp executor_projection.cpp executor_seq_scan.cpp executor_filter.cpp execute.cpp executor_insert.cpp executor_values.cpp)
+add_library(yoursql_executor OBJECT executor_factory.cpp executor_projection.cpp executor_seq_scan.cpp
+        executor_filter.cpp execute.cpp executor_insert.cpp executor_values.cpp executor_delete.cpp)
 
 set(ALL_OBJECT_FILES ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:yoursql_executor> PARENT_SCOPE)

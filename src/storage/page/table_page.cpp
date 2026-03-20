@@ -3,6 +3,8 @@
 //
 #include "storage/page/table_page.h"
 
+#include "storage/page/row.h"
+
 using namespace YourSQL;
 
 
@@ -59,18 +61,21 @@ auto TablePage::GetTuple(const RID &rid, Tuple *tuple) -> void {
 
     uint16_t slot_offset = 0;
     uint16_t size = 0;
-    char deleted = 0;
     memcpy(&slot_offset,page_->data_+offset,sizeof(uint16_t));
     memcpy(&size,page_->data_+offset+sizeof(uint16_t),sizeof(uint16_t));
-    memcpy(&deleted,page_->data_+offset+sizeof(uint16_t) * 2,sizeof(char));
 
-    if (!deleted) {
-        auto target = new char[size];
+
+    auto target = new char[size];
+    memcpy(target,page_->data_+slot_offset,size);
+    uint16_t flag;
+    size_t flags_offset = sizeof(tx_id_t) + sizeof(UndoPointer);
+    memcpy(&flag,target + flags_offset,sizeof(uint16_t));
+
+    if (flags_offset & RECORD_DEL) {
         memcpy(target,page_->data_+slot_offset,size);
         tuple->data_ = target;
         tuple->tuple_size_ = size;
     } else {
-        // 行已被删除，返回空数据
         tuple->data_ = nullptr;
         tuple->tuple_size_ = 0;
     }
@@ -157,12 +162,15 @@ auto TablePage::DeleteTuple(const RID &rid) -> void {
     std::lock_guard lock(mutex_);
 
     int offset = PAGE_SIZE - rid.row_id_ * SLOT_SIZE;
-    char del = 0;
-    memcpy(&del, page_->data_ + offset + sizeof(uint16_t) * 2 + 1, sizeof(char));
+    size_t record_offset = 0;
+    memcpy(&record_offset, page_->data_ + offset , sizeof(uint16_t));
 
-    if (!del) {
-        del = 1;
-        memcpy(page_->data_ + offset + sizeof(uint16_t) * 2 + 1,&del,sizeof(char));
+    uint16_t flags_offset = sizeof(tx_id_t) + sizeof(UndoPointer);
+    memcpy(&flags_offset, page_->data_ + record_offset + flags_offset , sizeof(uint16_t));
+
+    if (!(flags_offset & RECORD_DEL)) {
+        flags_offset |= RECORD_DEL;
+        memcpy(page_->data_ + record_offset + flags_offset,&flags_offset,sizeof(uint16_t));
         meta_page_->UpdateTableRows(table_id_,-1);
     }
 }

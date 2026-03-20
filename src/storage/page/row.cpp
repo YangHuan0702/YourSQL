@@ -120,6 +120,7 @@ auto Row::Serialize() -> char * {
     memcpy(data + header_offset,&header_.flags_,sizeof(uint16_t));
     header_offset += sizeof(uint16_t);
     memcpy(data + header_offset, meta, schema_.columns_.size());
+    header_offset += schema_.columns_.size();
     delete [] meta;
 
     size_t begin_offset = PAYLOAD_OFFSET + schema_.columns_.size();
@@ -161,7 +162,7 @@ auto Row::Serialize() -> char * {
             }
         }
     }
-    use_size_ = size;
+    use_size_ = size + PAYLOAD_OFFSET;
     return data;
 }
 
