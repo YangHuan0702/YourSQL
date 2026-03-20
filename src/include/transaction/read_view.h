@@ -27,7 +27,7 @@ namespace YourSQL {
         std::vector<tx_id_t> active_ids_;
 
 
-        auto IsVisible(tx_id_t version_trx_id) const -> bool;
+        [[nodiscard]] auto IsVisible(tx_id_t version_trx_id) const -> bool;
 
     };
 
