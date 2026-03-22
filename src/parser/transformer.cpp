@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "sql/DeleteStatement.h"
 #include "sql/InsertStatement.h"
 #include "sql/SelectStatement.h"
 
@@ -30,9 +31,26 @@ auto Transformer::transformStatement(const hsql::SQLStatement *sql_statement) ->
             return transformSelect((hsql::SelectStatement*)sql_statement);
         case hsql::kStmtInsert:
             return transformInsert((hsql::InsertStatement*)sql_statement);
+        case hsql::kStmtCreate:
+            return transformCreate((hsql::CreateStatement*)sql_statement);
         default:
             throw std::runtime_error("Invalid SQL statement");
     }
 }
 
 
+auto Transformer::transformCreate(const hsql::CreateStatement *sql_statement) -> std::unique_ptr<BaseStatement> {
+    if (!sql_statement) {
+        throw std::runtime_error("Transformer::transformCreate args sql_statement is nullptr;");
+    }
+    switch (sql_statement->type) {
+        case hsql::kCreateTable:
+            return transformCreateTable(sql_statement);
+        default: throw std::runtime_error("Transformer::tansformCreate unknow sql statement type.");
+    }
+}
+
+auto Transformer::transformCreateTable(const hsql::CreateStatement *sql_statement) -> std::unique_ptr<BaseStatement> {
+
+    return nullptr;
+}

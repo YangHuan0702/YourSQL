@@ -6,7 +6,8 @@
 
 namespace YourSQL {
 
-    enum class StatementType : uint8_t {
+    enum class
+    StatementType : uint8_t {
 
 
         SELECT = 1,
@@ -18,6 +19,8 @@ namespace YourSQL {
 
         OPERATOR = 6,
         COMP = 7,
+
+        CREATE_TABLE = 8,
     };
 
 
@@ -33,6 +36,8 @@ namespace YourSQL {
         COLUMN,
         TABLE ,
         FUNCTION,
+
+        CREATE_TABLE,
 
 
         OPERATOR,
