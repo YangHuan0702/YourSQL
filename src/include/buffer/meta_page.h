@@ -4,15 +4,25 @@
 #pragma once
 #include <memory>
 
-#include "common/type.h"
 #include <string>
 #include <unordered_map>
 
-
 #include "buffer_manager.h"
 #include "common/constant.h"
+#include "common/types/column_types.h"
 
 namespace YourSQL {
+
+#define COLUMN_DEFAULT (1 << 0)
+#define COLUMN_NOT_NULL (1 << 1)
+
+    struct MetaColumnItem {
+        std::string column_name_;
+        ColumnTypes type_;
+        uint8_t flags_;
+        entry_id column_id_;
+    };
+
     struct MetaItem {
         page_id_t first_page_id;
         std::string table_name_;
@@ -20,6 +30,8 @@ namespace YourSQL {
         entry_id table_id_;
         page_id_t last_page_id;
         size_t offset;
+        size_t column_size_;
+        std::vector<MetaColumnItem> items_;
     };
 
 #define ITEMS_OFFSET_BEGIN (sizeof(size_t) * 3)
@@ -49,9 +61,10 @@ namespace YourSQL {
 
         auto Init() -> void;
 
+        auto WriteLastPoint() -> void;
         auto ReadMata() -> void;
 
-        auto AddTable(const MetaItem &item) -> void ;
+        auto AddTable(MetaItem &item) -> void ;
 
         auto UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> void ;
         auto UpdateTableFirstId(entry_id table_id, page_id_t first_page_id) -> void ;

@@ -18,6 +18,7 @@ namespace YourSQL {
 
 #define RECORD_DEL (1 << 0)
 #define FLAG_OFFSET (sizeof(trx_id_t) + sizeof(UndoPointer))
+
     struct RecordHeader {
         // 最后一个插入或更新该记录的事务 ID
         tx_id_t trx_id_{};
@@ -25,9 +26,7 @@ namespace YourSQL {
         UndoPointer roll_ptr_{};
         uint16_t flags_{};
     };
-
 #define PAYLOAD_OFFSET sizeof(RecordHeader)
-
 
 
     class Tuple {

@@ -25,6 +25,7 @@ namespace YourSQL {
             delete [] frames_;
         }
 
+        auto CurrFileSize() const -> size_t;
         auto NewPage() -> Page*;
         auto Release(Page *page) -> void;
         auto Release(page_id_t page_id) -> void;

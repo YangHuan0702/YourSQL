@@ -1,6 +1,8 @@
 //
 // Created by huan.yang on 2026-03-19.
 //
+#include <stdexcept>
+
 #include "transaction/undo_log.h"
 
 using namespace YourSQL;
@@ -60,5 +62,4 @@ auto UndoLogPage::AppendRecord(const UndoLogRecord &record) -> bool {
     page_->is_dirty_ = true;
     return true;
 }
-
 

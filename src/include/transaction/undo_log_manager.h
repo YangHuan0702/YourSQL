@@ -4,8 +4,9 @@
 #pragma once
 #include <memory>
 
-#include "undo_log.h"
 #include "buffer/buffer_manager.h"
+#include "storage/page/tuple.h"
+#include "undo_log.h"
 
 namespace YourSQL {
 

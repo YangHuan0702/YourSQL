@@ -9,13 +9,13 @@
 
 using namespace YourSQL;
 
-TEST(Transaction,TransactionInsert) {
+TEST(Transaction,TransactionMetaAdjustTest) {
     std::string sql = "insert into user (name,age) values('你好',23)";
 
     Parser parser;
     parser.ParserSQL(sql);
 
-    std::shared_ptr<Catalog> catalog = std::make_shared<Catalog>();
+    auto catalog = std::make_shared<Catalog>();
     std::string table_name = "user";
     auto table = std::make_unique<TableEntry>(IdManager::GetNextEntryId(), table_name);
     auto table_id = table->id_;
@@ -62,7 +62,6 @@ TEST(Transaction,TransactionInsert) {
 
     auto meta_page = std::make_shared<MetaPage>(buffer_manager);
     try {
-        if (disk_manger->Size() == 0) {
             meta_page->Init();
 
             MetaItem meta_item;
@@ -79,9 +78,7 @@ TEST(Transaction,TransactionInsert) {
             meta_item.items_.push_back(del_item);
 
             meta_page->AddTable(meta_item);
-        } else {
-            meta_page->ReadMata();
-        }
+
     } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
     }

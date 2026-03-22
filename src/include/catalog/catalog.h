@@ -7,16 +7,25 @@
 #include <algorithm>
 #include <unordered_map>
 #include <memory>
+
 #include "common/type.h"
 #include "table_entry.h"
-#include "common/util/IdUtil.h"
 
 namespace YourSQL {
 
     class Catalog {
     public:
-        explicit Catalog() = default;
+        Catalog() = default;
+        explicit Catalog(std::unique_ptr<MetaPage> meta_page) : meta_page_(std::move(meta_page)) {
+            meta_page_->Init();
+
+            InitFromMetaPage();
+        }
         ~Catalog() = default;
+
+
+        auto InitFromMetaPage() -> void;
+
 
         auto GetTableName(entry_id table_id) -> std::string {
             auto it = std::find_if(table_name_idx_.begin(),table_name_idx_.end(), [&] (const auto &p) {
@@ -33,8 +42,10 @@ namespace YourSQL {
             tables_[table_entry->id_] = std::move(table_entry);
         }
 
+        std::unique_ptr<MetaPage> meta_page_;
         std::unordered_map<std::string,entry_id> table_name_idx_;
         std::unordered_map<entry_id,std::unique_ptr<TableEntry>> tables_;
+
     };
 
 }

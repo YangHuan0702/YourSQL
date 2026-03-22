@@ -5,8 +5,6 @@
 #pragma once
 #include "buffer/page.h"
 #include "common/type.h"
-#include "common/util/page_id_util.h"
-#include "storage/page/tuple.h"
 
 namespace YourSQL {
     enum class UndoType : uint8_t {
