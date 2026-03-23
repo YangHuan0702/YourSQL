@@ -8,11 +8,13 @@
 #include "binder/bound_unary_expression.h"
 #include "binder/bound_const_expression.h"
 #include "binder/statement/bound_insert_statement.h"
+#include "planner/logical/logical_create_table.h"
 #include "planner/logical/logical_filter.h"
 #include "planner/logical/logical_insert.h"
 #include "planner/logical/logical_projection.h"
 #include "planner/logical/logical_seq_scan.h"
 #include "planner/logical/logical_values.h"
+#include "planner/physical/physical_create_table.h"
 #include "planner/physical/physical_filter.h"
 #include "planner/physical/physical_insert.h"
 #include "planner/physical/physical_projection.h"
@@ -31,6 +33,9 @@ auto Planner::CreateLogicalPlan(std::unique_ptr<BoundStatement> statement) -> st
                 std::unique_ptr<BoundSelectStatement>(dynamic_cast<BoundSelectStatement *>(statement.release())));
         case StatementType::INSERT: return LogicalInsertPlan(
                 std::unique_ptr<BoundInsertStatement>(dynamic_cast<BoundInsertStatement *>(statement.release())));
+        case StatementType::CREATE_TABLE: return LogicalCreateTablePlan(
+                std::unique_ptr<BoundCreateTableStatement>(
+                    dynamic_cast<BoundCreateTableStatement *>(statement.release())));
         default: throw std::runtime_error("[LogicalPlanner] unknow statement type.");
     }
 }
@@ -38,6 +43,10 @@ auto Planner::CreateLogicalPlan(std::unique_ptr<BoundStatement> statement) -> st
 auto Planner::CreatePhysicalPlan(
     const std::unique_ptr<LogicalOperator> &logical_operator) -> std::unique_ptr<PhysicalOperator> {
     switch (logical_operator->type_) {
+        case LogicalOperatorType::LOGICAL_CREATE_TABLE : {
+            auto logical_op = dynamic_cast<LogicalCreateTable *>(logical_operator.get());
+            return std::make_unique<PhysicalCreateTable>(logical_op->table_id_);
+        }
         case LogicalOperatorType::LOGICAL_INSERT: {
             auto logical_op = dynamic_cast<LogicalInsert *>(logical_operator.get());
             auto r = std::make_unique<PhysicalInsert>(logical_op->table_id_, logical_op->column_ids_);
@@ -71,7 +80,7 @@ auto Planner::CreatePhysicalPlan(
                 auto expr = dynamic_cast<BoundColumnRefExpression *>(bound_expression.get());
                 r->columns_.push_back(expr->column_id_);
             }
-            for (auto &operator_ : logical_op->children_) {
+            for (auto &operator_: logical_op->children_) {
                 r->children_.push_back(CreatePhysicalPlan(operator_));
             }
             return r;

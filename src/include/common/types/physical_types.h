@@ -13,5 +13,6 @@ namespace YourSQL {
         PHYSICAL_HASH_JOIN,
         PHYSICAL_VALUES,
         PHYSICAL_INSERT,
+        PHYSICAL_CREATE_TABLE,
     };
 }

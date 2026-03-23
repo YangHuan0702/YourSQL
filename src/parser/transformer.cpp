@@ -5,6 +5,7 @@
 
 #include <algorithm>
 
+#include "parser/statement/create_table_statement.h"
 #include "sql/DeleteStatement.h"
 #include "sql/InsertStatement.h"
 #include "sql/SelectStatement.h"
@@ -51,6 +52,16 @@ auto Transformer::transformCreate(const hsql::CreateStatement *sql_statement) ->
 }
 
 auto Transformer::transformCreateTable(const hsql::CreateStatement *sql_statement) -> std::unique_ptr<BaseStatement> {
-
-    return nullptr;
+    auto table_statement = std::make_unique<CreateTableStatement>();
+    table_statement->table_name_ = sql_statement->tableName;
+    auto column_size = sql_statement->columns->size();
+    for (size_t i = 0; i < column_size; ++i) {
+        auto c  =sql_statement->columns->at(i);
+        Column column;
+        column.name_ = c->name;
+        column.column_types_ = CreateTableStatement::TransformerType(c->type);
+        column.not_null_ = c->nullable;
+        table_statement->columns_.push_back(std::move(column));
+    }
+    return table_statement;
 }

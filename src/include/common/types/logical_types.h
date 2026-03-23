@@ -17,7 +17,8 @@ namespace YourSQL {
         LOGICAL_DELETE,
         LOGICAL_UPDATE,
         LOGICAL_EXPLAIN,
-        LOGICAL_VALUES
+        LOGICAL_VALUES,
+        LOGICAL_CREATE_TABLE
     };
 
 }

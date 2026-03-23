@@ -131,3 +131,12 @@ auto Execute::ExecuteInsert(std::unique_ptr<Executor> root) -> void {
     std::cout<<"执行成功了哥们！"<< std::endl;
 }
 
+
+auto Execute::ExecutorCreateTable(std::unique_ptr<Executor> root) -> void {
+
+    root->Open();
+    root->Next(nullptr);
+    root->Close();
+
+    std::cout << "Table Create Done." << std::endl;
+}
