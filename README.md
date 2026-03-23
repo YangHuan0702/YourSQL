@@ -10,10 +10,10 @@
    ========================================
    Type 'exit' or 'quit' to exit
 
-   YourSQL> CREATE TABLE user (name VARCHAR, age INTEGER);
+   YourSQL> CREATE TABLE user (name VARCHAR(50), age INTEGER);
    Table Create Done.
 
-   YourSQL> INSERT INTO user VALUES ('Alice', 25);
+   YourSQL> INSERT INTO user (name,age) VALUES ('Alice', 25);
    执行成功了哥们！
 
    YourSQL> SELECT * FROM user;
