@@ -4,6 +4,7 @@
 #pragma once
 #include <string>
 
+#include "sql/Expr.h"
 #include "parser/statement.h"
 
 namespace YourSQL {

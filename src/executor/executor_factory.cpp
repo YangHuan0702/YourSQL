@@ -47,10 +47,10 @@ auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_
         }
         case PhysicalOperatorTypes::PHYSICAL_VALUES: {
             auto values = dynamic_cast<PhysicalValues *>(physical_operator.get());
-            if (context_->catalog_->tables_.find(table_id_) == context_->catalog_->tables_.end()) {
+            if (context_->catalog_->tables_.find(values->table_id_) == context_->catalog_->tables_.end()) {
                 throw std::runtime_error("ExecutorFactory::BuildExecutor Invalid table id");
             }
-            return std::make_unique<ExecutorValues>(context_, values->values_,values->column_ids_,table_id_);
+            return std::make_unique<ExecutorValues>(context_, values->values_,values->column_ids_,values->table_id_);
         }
         case PhysicalOperatorTypes::PHYSICAL_INSERT: {
             auto insert = dynamic_cast<PhysicalInsert *>(physical_operator.get());

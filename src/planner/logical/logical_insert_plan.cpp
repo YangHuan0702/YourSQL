@@ -15,7 +15,7 @@ auto Planner::LogicalInsertPlan(
     *   LogicalValues
     **/
     std::unique_ptr<LogicalOperator> values = std::make_unique<LogicalValues>(
-        insert_statement->column_ids_, insert_statement->values_);
+        insert_statement->column_ids_, insert_statement->values_,insert_statement->table_id_);
     values->SetLogicalOpType(LogicalOperatorType::LOGICAL_VALUES);
 
     auto logical_insert = std::make_unique<LogicalInsert>(insert_statement->table_id_, insert_statement->column_ids_);

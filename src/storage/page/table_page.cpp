@@ -71,7 +71,7 @@ auto TablePage::GetTuple(const RID &rid, Tuple *tuple) -> void {
     size_t flags_offset = sizeof(tx_id_t) + sizeof(UndoPointer);
     memcpy(&flag,target + flags_offset,sizeof(uint16_t));
 
-    if (flags_offset & RECORD_DEL) {
+    if (!(flags_offset & RECORD_DEL)) {
         memcpy(target,page_->data_+slot_offset,size);
         tuple->data_ = target;
         tuple->tuple_size_ = size;

@@ -38,7 +38,7 @@ auto ExecutorValues::Open() -> void {
 
 auto ExecutorValues::Next(Tuple *tuple) -> bool {
     if (used_) return false;
-    row->SetTrxId(context_->transaction_->tx_id_);
+    // row->SetTrxId(context_->transaction_->tx_id_);
     row->SetFlags(0);
 
     UndoPointer undo_pointer{};

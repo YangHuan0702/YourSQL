@@ -81,7 +81,7 @@ namespace YourSQL {
 
         size_t version_{};
         size_t table_size_{};
-        size_t last_point_{};
+        size_t last_point_{ITEMS_OFFSET_BEGIN};
 
         std::shared_ptr<BufferManager> buffer_manager_;
         Page *meta_page_{nullptr};

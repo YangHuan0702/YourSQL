@@ -18,7 +18,4 @@ TEST(Binder,CreateTableSQLTest) {
     Binder binder(catalog);
     std::unique_ptr<BaseStatement> &create_table_statement = parser.GetStatements()[0];
 
-    binder.
-
-
 }

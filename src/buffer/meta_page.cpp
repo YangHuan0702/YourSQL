@@ -206,10 +206,8 @@ auto MetaPage::UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> v
 }
 
 auto MetaPage::AddTable(MetaItem &item) -> void {
-    name_tables_[item.table_name_] = item.first_page_id;
-    id_tables_[item.table_id_] = item.first_page_id;
-    items_[item.table_id_] = item;
-    size_t item_offset = last_point_;
+
+    size_t item_offset = last_point_ == 0 ? ITEMS_OFFSET_BEGIN : last_point_;
     item.offset = item_offset;
 
     size_t need_size = ITEM_FIXED_SIZE + item.table_name_.size() ;
@@ -219,6 +217,13 @@ auto MetaPage::AddTable(MetaItem &item) -> void {
     }
     size_t name_len = item.table_name_.size();
     LOG(INFO) << "Writing table_name_len: " << name_len << ", table_name: " << item.table_name_;
+
+    if (item.first_page_id == 0) {
+        item.first_page_id = item.table_id_;
+    }
+    if (item.last_page_id == 0) {
+        item.last_page_id = item.table_id_;
+    }
 
     memcpy(meta_page_->data_+last_point_,&name_len,sizeof(size_t));
     last_point_ += sizeof(size_t);
@@ -258,6 +263,10 @@ auto MetaPage::AddTable(MetaItem &item) -> void {
         last_point_ += sizeof(entry_id);
         LOG(INFO) << "After writing column '" << meta_column_item.column_name_ << "', last_point: " << last_point_;
     }
+    name_tables_[item.table_name_] = item.first_page_id;
+    id_tables_[item.table_id_] = item.first_page_id;
+    items_[item.table_id_] = item;
+
     WriteLastPoint();
     UpdateTableSize(1);
 }
