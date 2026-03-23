@@ -47,7 +47,7 @@ TEST(Executor, ExecutorSelectTest) {
     auto meta_page = std::make_shared<MetaPage>(buffer_manager);
     meta_page->ReadMata();
 
-    auto executor_context = std::make_shared<ExecutorContext>(catalog, buffer_manager, meta_page);
+    auto executor_context = std::make_shared<ExecutorContext>(catalog, buffer_manager, meta_page,nullptr,nullptr,nullptr);
 
     try {
         Binder binder(catalog);

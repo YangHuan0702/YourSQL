@@ -6,6 +6,8 @@ add_subdirectory(storage)
 add_subdirectory(buffer)
 add_subdirectory(executor)
 add_subdirectory(index)
+add_subdirectory(log)
+add_subdirectory(transaction)
 
 add_library(YourDB SHARED ${ALL_OBJECT_FILES})
 
@@ -16,3 +18,8 @@ target_link_libraries(YourDB ${THIRD_PARTY_LIBS})
 target_include_directories(YourDB PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+# YourSQL Terminal 可执行文件
+set(TERMINAL_SOURCES main.cpp)
+add_executable(yoursql ${TERMINAL_SOURCES})
+target_link_libraries(yoursql YourDB ${THIRD_PARTY_LIBS})

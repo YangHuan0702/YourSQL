@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <memory>
+#include <utility>
 
 #include "executor_context.h"
 #include "common/types/physical_types.h"
@@ -12,7 +13,7 @@
 namespace YourSQL {
     class Executor {
     public:
-        explicit Executor(std::shared_ptr<ExecutorContext> context,PhysicalOperatorTypes type) : type_(type),context_(context) {
+        explicit Executor(std::shared_ptr<ExecutorContext> context,PhysicalOperatorTypes type) : type_(type),context_(std::move(context)) {
         }
 
         virtual ~Executor() = default;

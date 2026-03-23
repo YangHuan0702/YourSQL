@@ -5,6 +5,8 @@
 
 #include <algorithm>
 
+#include "storage/page/row.h"
+
 using namespace YourSQL;
 
 auto ExecutorSeqScan::Close() -> void {
@@ -15,9 +17,13 @@ auto ExecutorSeqScan::Close() -> void {
 
 auto ExecutorSeqScan::Next(Tuple *tuple) -> bool {
     if (!iterator_ || iterator_->IsEnd()) { return false;}
-    *tuple = **iterator_;
-    ++(*iterator_);
-    tuple->schema_ = schema_;
+    Row row(schema_);
+    // do {
+        *tuple = **iterator_;
+        ++(*iterator_);
+        tuple->schema_ = schema_;
+        row.Deserialize(*tuple);
+    // } while (row.header_.trx_id_ != context_->transaction_->tx_id_ && !context_->transaction_->read_view_->IsVisible(row.header_.trx_id_));
     return true;
 }
 

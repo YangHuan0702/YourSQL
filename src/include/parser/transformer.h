@@ -35,6 +35,8 @@ namespace YourSQL {
         auto transformOperator(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
 
         auto transformStatement(const hsql::SQLStatement *sql_statement) -> std::unique_ptr<BaseStatement>;
+        auto transformCreate(const hsql::CreateStatement *sql_statement) -> std::unique_ptr<BaseStatement>;
+        auto transformCreateTable(const hsql::CreateStatement *sql_statement) -> std::unique_ptr<BaseStatement>;
 
         auto transformColumnExpr(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
 

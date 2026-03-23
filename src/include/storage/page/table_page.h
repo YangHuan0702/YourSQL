@@ -13,8 +13,8 @@
 namespace YourSQL {
 
 #define NUM_ROWS_OFFSET sizeof(uint16_t)
-#define SLOT_SIZE (sizeof(uint16_t) * 2 + 1)
-#define HEADER_SIZE (NUM_ROWS_OFFSET + sizeof(uint32_t) + sizeof(page_id_t) * 2)
+#define SLOT_SIZE (sizeof(uint16_t) * 2)
+#define HEADER_SIZE sizeof(TableHeader)
 
 
     struct TableHeader {
@@ -22,12 +22,12 @@ namespace YourSQL {
         uint32_t num_rows;
         page_id_t page_id;
         page_id_t next_page_id;
+        lsn_t lsn_;
     };
 
     struct Slot {
         uint16_t offset;
         uint16_t size;
-        bool deleted;
     };
 
     /**
@@ -37,14 +37,14 @@ namespace YourSQL {
      * ------------------------------------------------------
      *
      * header:
-     * -----------------------------------------------
-     * | version | num_rows | page_id | next_page_id |
-     * -----------------------------------------------
+     * -----------------------------------------------------
+     * | version | num_rows | page_id | next_page_id | lsn |
+     * -----------------------------------------------------
      *
      * slot:
-     * ------------------------------------
-     * | tuple_offset | size | is_deleted |
-     * ------------------------------------
+     * -----------------------
+     * | tuple_offset | size |
+     * ----------------------
      *
      */
     class TablePage {
@@ -58,7 +58,7 @@ namespace YourSQL {
         auto updateTuple(const Tuple &tuple,const RID &rid) -> void;
         auto DeleteTuple(const RID &rid) -> void;
         auto GetTuple(const RID &rid, Tuple *tuple) -> void;
-        auto GetPage() const -> Page* {
+        [[nodiscard]] auto GetPage() const -> Page* {
             return page_;
         }
 

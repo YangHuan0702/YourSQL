@@ -9,7 +9,7 @@
 #include <string>
 
 namespace YourSQL {
-    enum class ColumnTypes {
+    enum class ColumnTypes : uint8_t {
         INVALID,
         INTEGER,
         BOOL,

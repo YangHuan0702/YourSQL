@@ -3,11 +3,13 @@
 //
 #include "executor/executor_factory.h"
 
+#include "executor/executor_create_table.h"
 #include "executor/executor_filter.h"
 #include "executor/executor_projection.h"
 #include "executor/executor_seq_scan.h"
 #include "executor/executor_values.h"
 #include "executor/executor_insert.h"
+#include "planner/physical/physical_create_table.h"
 #include "planner/physical/physical_filter.h"
 #include "planner/physical/physical_projection.h"
 #include "planner/physical/physical_seq_scan.h"
@@ -19,6 +21,10 @@ using namespace YourSQL;
 
 auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_operator) -> std::unique_ptr<Executor> {
     switch (physical_operator->type_) {
+        case PhysicalOperatorTypes::PHYSICAL_CREATE_TABLE: {
+            auto create_table = dynamic_cast<PhysicalCreateTable *>(physical_operator.get());
+            return std::make_unique<ExecutorCreateTable>(context_, create_table->table_id_);
+        }
         case PhysicalOperatorTypes::PHYSICAL_SEQ_SCAN: {
             auto seq_scan = dynamic_cast<PhysicalSeqScan *>(physical_operator.get());
             return std::make_unique<ExecutorSeqScan>(context_, context_->catalog_->GetTableName(seq_scan->table_id_));
@@ -41,10 +47,10 @@ auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_
         }
         case PhysicalOperatorTypes::PHYSICAL_VALUES: {
             auto values = dynamic_cast<PhysicalValues *>(physical_operator.get());
-            if (context_->catalog_->tables_.find(table_id_) == context_->catalog_->tables_.end()) {
+            if (context_->catalog_->tables_.find(values->table_id_) == context_->catalog_->tables_.end()) {
                 throw std::runtime_error("ExecutorFactory::BuildExecutor Invalid table id");
             }
-            return std::make_unique<ExecutorValues>(context_, values->values_,values->column_ids_,table_id_);
+            return std::make_unique<ExecutorValues>(context_, values->values_,values->column_ids_,values->table_id_);
         }
         case PhysicalOperatorTypes::PHYSICAL_INSERT: {
             auto insert = dynamic_cast<PhysicalInsert *>(physical_operator.get());

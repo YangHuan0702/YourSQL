@@ -4,6 +4,7 @@
 #include "buffer/buffer_manager.h"
 
 #include "common/util/page_id_util.h"
+#include "glog/logging.h"
 
 using namespace YourSQL;
 
@@ -22,8 +23,11 @@ auto BufferManager::Flush(page_id_t page_id) -> void {
     }
     auto page = &frames_[buffer_pages_[page_id]];
     if (page->is_dirty_) {
+        LOG(INFO) << "Flush - writing page " << page_id << " to disk";
         disk_manager_->Write(page);
         page->is_dirty_ = false;
+    } else {
+        LOG(INFO) << "Flush - page " << page_id << " is not dirty, skipping";
     }
 }
 
@@ -44,6 +48,10 @@ auto BufferManager::Release(page_id_t page_id) -> void {
         free_pages_.insert(free_pages_.begin(),frame_id);
         buffer_pages_.erase(page_id);
     }
+}
+
+auto BufferManager::CurrFileSize() const -> size_t {
+    return disk_manager_->Size();
 }
 
 auto BufferManager::NewPage() -> Page * {
@@ -116,7 +124,7 @@ auto BufferManager::FetchPage(page_id_t page_id) -> Page * {
             buffer_pages_[page_id] = frame;
         }
     }
-    ans->Reset();
+    // ans->Reset();
     ans->SetPageId(page_id);
     return ans;
 }

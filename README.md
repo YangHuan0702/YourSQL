@@ -4,6 +4,27 @@
 
 ---
 
+```jsunicoderegexp
+========================================
+         Welcome to YourSQL Terminal
+   ========================================
+   Type 'exit' or 'quit' to exit
+
+   YourSQL> CREATE TABLE user (name VARCHAR(50), age INTEGER);
+   Table Create Done.
+
+   YourSQL> INSERT INTO user (name,age) VALUES ('Alice', 25);
+   执行成功了哥们！
+
+   YourSQL> SELECT * FROM user;
+   +-------+------+
+   | name  | age  |
+   +-------+------+
+   | Alice | 25   |
+   +-------+------+
+   1 row(s) in set
+```
+
 ## 🧭 项目定位
 
 **YourDB 是一个学习型但不玩具化的 OLTP 数据库引擎。**

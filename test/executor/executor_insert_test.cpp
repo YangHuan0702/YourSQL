@@ -68,7 +68,7 @@ TEST(Executor, ExecutorInsertSQLTest) {
         std::cout << e.what() << std::endl;
     }
 
-    auto executor_context = std::make_shared<ExecutorContext>(catalog, buffer_manager, meta_page);
+    auto executor_context = std::make_shared<ExecutorContext>(catalog, buffer_manager, meta_page,nullptr,nullptr,nullptr);
 
     try {
         Binder binder(catalog);

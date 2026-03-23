@@ -19,30 +19,32 @@ auto ExecutorInsert::Open() -> void {
         throw std::runtime_error("ExecutorInsert::Open No meta page exists:" + std::to_string(table_id_));
     }
     MetaItem &item = context_->meta_page_->items_[table_id_];
-    Page *page = nullptr;
-    bool read = true;
-    if (item.last_page_id == INVALID_PAGE_ID) {
-        page = context_->buffer_manager_->NewPage();
-        read = false;
+    // Page *page = nullptr;
+    // bool read = true;
+    // if (item.last_page_id == INVALID_PAGE_ID) {
+    //     page = context_->buffer_manager_->NewPage();
+    //     read = false;
+    //
+    //     context_->meta_page_->UpdateTableLastId(item.table_id_,page->id_);
+    //     item.last_page_id = page->id_;
+    //
+    //     if (item.first_page_id == INVALID_PAGE_ID) {
+    //         item.first_page_id = page->id_;
+    //         context_->meta_page_->UpdateTableFirstId(item.table_id_,page->id_);
+    //     }
+    // } else {
+    //     page = context_->buffer_manager_->FetchPage(item.last_page_id);
+    // }
+    Page *page = context_->buffer_manager_->FetchPage(item.last_page_id);
 
-        context_->meta_page_->UpdateTableLastId(item.table_id_,page->id_);
-        item.last_page_id = page->id_;
-
-        if (item.first_page_id == INVALID_PAGE_ID) {
-            item.first_page_id = page->id_;
-            context_->meta_page_->UpdateTableFirstId(item.table_id_,page->id_);
-        }
-    } else {
-        page = context_->buffer_manager_->FetchPage(item.last_page_id);
-    }
-
-    page_ = new TablePage(context_->meta_page_,table_id_,page,read);
+    page_ = new TablePage(context_->meta_page_,table_id_,page,item.num_rows_ > 0);
     children_[0]->Open();
 }
 
 auto ExecutorInsert::Next(Tuple *tuple) -> bool {
     while (children_[0]->Next(tuple)) {
-        RID rid;
+        RID rid{};
+
         // 计算Page空间，如果空间不够还需要创建Page
         page_->InsertTuple(*tuple,&rid);
         context_->buffer_manager_->Flush(page_->GetPage()->id_);

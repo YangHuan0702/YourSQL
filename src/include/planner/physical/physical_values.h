@@ -10,8 +10,8 @@
 namespace YourSQL {
     class PhysicalValues : public PhysicalOperator {
     public:
-        explicit PhysicalValues(std::vector<entry_id> column_ids,std::vector<Value> values) : PhysicalOperator(
-                PhysicalOperatorTypes::PHYSICAL_VALUES), column_ids_(std::move(column_ids)), values_(std::move(values)) {
+        explicit PhysicalValues(std::vector<entry_id> column_ids,std::vector<Value> values,entry_id table_id) : PhysicalOperator(
+                PhysicalOperatorTypes::PHYSICAL_VALUES), column_ids_(std::move(column_ids)), values_(std::move(values)),table_id_(table_id) {
         }
 
         ~PhysicalValues() override = default;
@@ -23,5 +23,6 @@ namespace YourSQL {
 
         std::vector<entry_id> column_ids_;
         std::vector<Value> values_;
+        entry_id table_id_;
     };
 }

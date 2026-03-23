@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "catalog/column_entry.h"
+#include "transaction/undo_log.h"
 
 namespace YourSQL {
     class Schema {
@@ -13,6 +14,19 @@ namespace YourSQL {
         std::vector<ColumnEntry> columns_;
         uint16_t tuple_size_;
     };
+
+
+#define RECORD_DEL (1 << 0)
+#define FLAG_OFFSET (sizeof(trx_id_t) + sizeof(UndoPointer))
+
+    struct RecordHeader {
+        // 最后一个插入或更新该记录的事务 ID
+        tx_id_t trx_id_{};
+        // 指向最近一条 undo 记录
+        UndoPointer roll_ptr_{};
+        uint16_t flags_{};
+    };
+#define PAYLOAD_OFFSET sizeof(RecordHeader)
 
 
     class Tuple {
