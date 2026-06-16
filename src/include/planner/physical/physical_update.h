@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "physical_operator.h"
-#include "physical/expression/physical_expression.h"
+#include "planner/physical/expression/physical_expression.h"
 #include "binder/statement/bound_update_statement.h"
 #include "common/type.h"
 

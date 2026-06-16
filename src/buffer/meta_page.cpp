@@ -185,6 +185,12 @@ auto MetaPage::UpdateTableFirstId(entry_id table_id, page_id_t first_page_id) ->
     auto &item = items_[table_id];
     item.first_page_id = first_page_id;
 
+    // name_tables_/id_tables_ 缓存的是 first_page_id，必须同步更新，
+    // 否则 GetFirstPageId 会一直返回建表时写入的 INVALID_PAGE_ID(0)，
+    // 导致 TableIterator 认为表为空查不出数据
+    name_tables_[item.table_name_] = first_page_id;
+    id_tables_[table_id] = first_page_id;
+
     size_t name_len = GetNameLen(item);
     size_t offset = item.offset + sizeof(size_t) + name_len ;
 

@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "physical_operator.h"
-#include "physical/expression/physical_expression.h"
+#include "planner/physical/expression/physical_expression.h"
 #include "common/type.h"
 
 namespace YourSQL {

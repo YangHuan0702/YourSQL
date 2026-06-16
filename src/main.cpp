@@ -126,9 +126,6 @@ private:
             return;
         }
 
-        // 2. 绑定
-        Binder binder(catalog_);
-        std::unique_ptr<BoundStatement> bound_statement;
 
         // 根据语句类型进行绑定
         if (auto *select_stmt = dynamic_cast<SelectStatement*>(statement.get())) {
