@@ -158,12 +158,16 @@ auto MetaPage::UpdateTableSize(size_t change_size) -> void {
 }
 
 
-auto MetaPage::UpdateTableRows(entry_id table_id, size_t change_size) -> void {
+auto MetaPage::UpdateTableRows(entry_id table_id, int64_t change_size) -> void {
     if (items_.find(table_id) == items_.end()) {
         throw std::runtime_error("MetaPage::UpdateTableRows don`t find target table_id");
     }
     auto &item = items_[table_id];
-    item.num_rows_ += change_size;
+    if (change_size < 0 && static_cast<size_t>(-change_size) > item.num_rows_) {
+        item.num_rows_ = 0;
+    } else {
+        item.num_rows_ = static_cast<size_t>(static_cast<int64_t>(item.num_rows_) + change_size);
+    }
 
     size_t name_len = GetNameLen(item);
     size_t offset = item.offset + sizeof(size_t) + name_len + sizeof(page_id_t);
@@ -218,12 +222,8 @@ auto MetaPage::AddTable(MetaItem &item) -> void {
     size_t name_len = item.table_name_.size();
     LOG(INFO) << "Writing table_name_len: " << name_len << ", table_name: " << item.table_name_;
 
-    if (item.first_page_id == 0) {
-        item.first_page_id = item.table_id_;
-    }
-    if (item.last_page_id == 0) {
-        item.last_page_id = item.table_id_;
-    }
+    // 新建表时尚未分配数据页，first/last 保持 INVALID_PAGE_ID，由首次 INSERT 惰性分配
+    // （不要用 table_id 兜底——那是 entry id，不是 page id，会去 fetch 不存在/错误的页）
 
     memcpy(meta_page_->data_+last_point_,&name_len,sizeof(size_t));
     last_point_ += sizeof(size_t);

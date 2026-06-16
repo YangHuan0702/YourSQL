@@ -39,6 +39,11 @@ namespace YourSQL {
 
         auto IsEnd() const -> bool { return is_end_; }
 
+        // 当前记录的 RID（页 id + 行号）
+        auto GetRID() const -> RID { return RID{current_page_id_, current_row_index_}; }
+        // 当前所在的 TablePage（用于在原页上做 MVCC 标记删除）
+        auto GetCurrentPage() const -> TablePage* { return current_table_page_.get(); }
+
     private:
         auto LoadPage() -> void;
 

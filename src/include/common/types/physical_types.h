@@ -14,5 +14,7 @@ namespace YourSQL {
         PHYSICAL_VALUES,
         PHYSICAL_INSERT,
         PHYSICAL_CREATE_TABLE,
+        PHYSICAL_DELETE,
+        PHYSICAL_UPDATE,
     };
 }

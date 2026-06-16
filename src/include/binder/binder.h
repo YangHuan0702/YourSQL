@@ -12,9 +12,13 @@
 #include "parser/statement/create_table_statement.h"
 #include "parser/statement/insert_statement.h"
 #include "parser/statement/select_statement.h"
+#include "parser/statement/delete_statement.h"
+#include "parser/statement/update_statement.h"
 #include "statement/bound_create_table_statement.h"
 #include "statement/bound_insert_statement.h"
 #include "statement/bound_select_statement.h"
+#include "statement/bound_delete_statement.h"
+#include "statement/bound_update_statement.h"
 
 namespace YourSQL {
 
@@ -26,6 +30,8 @@ namespace YourSQL {
         auto BoundSelectStatement(std::unique_ptr<SelectStatement> parser_statement) -> std::unique_ptr<BoundSelectStatement>;
         auto BoundInsertStatement(std::unique_ptr<InsertStatement> parser_statement) -> std::unique_ptr<BoundInsertStatement>;
         auto BoundCreateTableStatement(std::unique_ptr<CreateTableStatement> parser_statement) -> std::unique_ptr<BoundCreateTableStatement>;
+        auto BoundDeleteStatement(std::unique_ptr<DeleteStatement> parser_statement) -> std::unique_ptr<BoundDeleteStatement>;
+        auto BoundUpdateStatement(std::unique_ptr<UpdateStatement> parser_statement) -> std::unique_ptr<BoundUpdateStatement>;
 
         auto BoundStarExpression(std::string &table_name) -> std::unique_ptr<BoundStarExpression>;
         auto BoundColumnRefExpression(std::string table_name, std::string column_name) -> std::unique_ptr<BoundColumnRefExpression>;

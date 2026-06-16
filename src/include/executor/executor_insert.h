@@ -27,5 +27,8 @@ namespace YourSQL {
 
         TablePage *page_{nullptr};
 
+    private:
+        // 当前页空间不足时，分配新页并链接到页链表尾部，page_ 切换为新页
+        auto AllocateAndLinkNewPage() -> void;
     };
 }

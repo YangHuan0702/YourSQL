@@ -6,9 +6,14 @@
 #include <algorithm>
 
 #include "parser/statement/create_table_statement.h"
+#include "parser/statement/delete_statement.h"
+#include "parser/statement/update_statement.h"
+#include "parser/statement/transaction_statement.h"
 #include "sql/DeleteStatement.h"
 #include "sql/InsertStatement.h"
 #include "sql/SelectStatement.h"
+#include "sql/UpdateStatement.h"
+#include "sql/TransactionStatement.h"
 
 using namespace YourSQL;
 
@@ -34,6 +39,12 @@ auto Transformer::transformStatement(const hsql::SQLStatement *sql_statement) ->
             return transformInsert((hsql::InsertStatement*)sql_statement);
         case hsql::kStmtCreate:
             return transformCreate((hsql::CreateStatement*)sql_statement);
+        case hsql::kStmtDelete:
+            return transformDelete((const hsql::DeleteStatement*)sql_statement);
+        case hsql::kStmtUpdate:
+            return transformUpdate((const hsql::UpdateStatement*)sql_statement);
+        case hsql::kStmtTransaction:
+            return transformTransaction((const hsql::TransactionStatement*)sql_statement);
         default:
             throw std::runtime_error("Invalid SQL statement");
     }

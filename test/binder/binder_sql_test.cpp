@@ -74,7 +74,7 @@ TEST(Binder,BinderSQLTest) {
 
         Execute execute(executor_context);
 
-        ExecutorFactory factory(executor_context,1);
+        ExecutorFactory factory(executor_context);
 
         auto executor = factory.BuildExecutor(physical_operator);
         execute.ExecuteQuery(std::move(executor));

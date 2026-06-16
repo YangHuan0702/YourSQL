@@ -9,6 +9,8 @@
 
 namespace YourSQL {
 
+    class TransactionManager;  // 前向声明，避免循环包含
+
     class ReadView {
     public:
         explicit ReadView() = default;
@@ -26,6 +28,8 @@ namespace YourSQL {
         // 拍快照时仍活跃的读写事务集合
         std::vector<tx_id_t> active_ids_;
 
+        // 用于查询事务最终状态（提交/中止）；不持有所有权
+        TransactionManager *txn_manager_{nullptr};
 
         [[nodiscard]] auto IsVisible(tx_id_t version_trx_id) const -> bool;
 

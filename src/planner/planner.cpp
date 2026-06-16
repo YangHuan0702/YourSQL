@@ -11,12 +11,16 @@
 #include "planner/logical/logical_create_table.h"
 #include "planner/logical/logical_filter.h"
 #include "planner/logical/logical_insert.h"
+#include "planner/logical/logical_delete.h"
+#include "planner/logical/logical_update.h"
 #include "planner/logical/logical_projection.h"
 #include "planner/logical/logical_seq_scan.h"
 #include "planner/logical/logical_values.h"
 #include "planner/physical/physical_create_table.h"
 #include "planner/physical/physical_filter.h"
 #include "planner/physical/physical_insert.h"
+#include "planner/physical/physical_delete.h"
+#include "planner/physical/physical_update.h"
 #include "planner/physical/physical_projection.h"
 #include "planner/physical/physical_seq_scan.h"
 #include "planner/physical/physical_values.h"
@@ -36,6 +40,10 @@ auto Planner::CreateLogicalPlan(std::unique_ptr<BoundStatement> statement) -> st
         case StatementType::CREATE_TABLE: return LogicalCreateTablePlan(
                 std::unique_ptr<BoundCreateTableStatement>(
                     dynamic_cast<BoundCreateTableStatement *>(statement.release())));
+        case StatementType::DELETE: return LogicalDeletePlan(
+                std::unique_ptr<BoundDeleteStatement>(dynamic_cast<BoundDeleteStatement *>(statement.release())));
+        case StatementType::UPDATE: return LogicalUpdatePlan(
+                std::unique_ptr<BoundUpdateStatement>(dynamic_cast<BoundUpdateStatement *>(statement.release())));
         default: throw std::runtime_error("[LogicalPlanner] unknow statement type.");
     }
 }
@@ -84,6 +92,23 @@ auto Planner::CreatePhysicalPlan(
                 r->children_.push_back(CreatePhysicalPlan(operator_));
             }
             return r;
+        }
+        case LogicalOperatorType::LOGICAL_DELETE: {
+            auto logical_op = dynamic_cast<LogicalDelete *>(logical_operator.get());
+            std::unique_ptr<PhysicalExpression> filter = nullptr;
+            if (logical_op->where_expr_) {
+                filter = TransformExpression(logical_op->where_expr_);
+            }
+            return std::make_unique<PhysicalDelete>(logical_op->table_id_, std::move(filter));
+        }
+        case LogicalOperatorType::LOGICAL_UPDATE: {
+            auto logical_op = dynamic_cast<LogicalUpdate *>(logical_operator.get());
+            std::unique_ptr<PhysicalExpression> filter = nullptr;
+            if (logical_op->where_expr_) {
+                filter = TransformExpression(logical_op->where_expr_);
+            }
+            return std::make_unique<PhysicalUpdate>(logical_op->table_id_,
+                                                    std::move(logical_op->set_clauses_), std::move(filter));
         }
         default: throw std::runtime_error("[LogicalPlanner] unknow logical operator type.");
     }

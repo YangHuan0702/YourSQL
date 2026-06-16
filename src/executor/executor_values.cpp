@@ -3,6 +3,9 @@
 //
 #include "executor/executor_values.h"
 
+#include "common/constant.h"
+#include "common/macro.h"
+
 using namespace YourSQL;
 
 auto ExecutorValues::Close() -> void {
@@ -38,11 +41,15 @@ auto ExecutorValues::Open() -> void {
 
 auto ExecutorValues::Next(Tuple *tuple) -> bool {
     if (used_) return false;
-    // row->SetTrxId(context_->transaction_->tx_id_);
+
+    // 新插入记录的 trx_id 取当前事务 id；无事务上下文时退化为 INVALID_TX_ID
+    tx_id_t trx_id = context_->transaction_ ? context_->transaction_->tx_id_ : INVALID_TX_ID;
+    row->SetTrxId(trx_id);
     row->SetFlags(0);
 
+    // 新记录没有历史版本，roll_ptr 置空
     UndoPointer undo_pointer{};
-    undo_pointer.page_id_ = INVALID_TX_ID;
+    undo_pointer.page_id_ = INVALID_PAGE_ID;
     undo_pointer.slot = 0;
 
     row->SetRollPtr(undo_pointer);

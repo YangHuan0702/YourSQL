@@ -16,6 +16,12 @@
 #include "statement/select_statement.h"
 #include "table_ref/your_table.h"
 
+namespace hsql {
+    struct DeleteStatement;
+    struct UpdateStatement;
+    struct TransactionStatement;
+}
+
 namespace YourSQL {
     class Transformer {
     public:
@@ -27,6 +33,9 @@ namespace YourSQL {
     private:
         auto transformSelect(hsql::SelectStatement *sqlStatement) -> std::unique_ptr<SelectStatement>;
         auto transformInsert(hsql::InsertStatement*) -> std::unique_ptr<InsertStatement>;
+        auto transformDelete(const hsql::DeleteStatement*) -> std::unique_ptr<BaseStatement>;
+        auto transformUpdate(const hsql::UpdateStatement*) -> std::unique_ptr<BaseStatement>;
+        auto transformTransaction(const hsql::TransactionStatement*) -> std::unique_ptr<BaseStatement>;
 
         auto transformWhere(hsql::Expr *expr) -> std::unique_ptr<BaseExpression>;
 

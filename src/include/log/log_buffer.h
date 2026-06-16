@@ -23,11 +23,13 @@ namespace YourSQL {
         auto SwapBuffers() -> void;
         auto BackendThreadMain() -> void;
 
+        int capacity_{0};          // 单个缓冲区容量
         char *log_buffer_;
         char *flush_buffer_;
-        int cur_offset_{0};
-        int flush_size_{};
+        int cur_offset_{0};        // 当前写缓冲已用字节
+        int flush_size_{};         // 待刷缓冲的有效字节
         std::atomic<bool> is_flush_{false};
+        std::atomic<bool> stop_{false};   // 通知后端线程退出
         std::mutex mutex_;
         std::condition_variable cv_backend_thread_;
         std::condition_variable cv_flush_thread_;

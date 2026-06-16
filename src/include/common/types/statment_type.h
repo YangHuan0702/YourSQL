@@ -21,6 +21,8 @@ namespace YourSQL {
         COMP = 7,
 
         CREATE_TABLE = 8,
+
+        TRANSACTION = 9,
     };
 
 

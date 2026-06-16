@@ -11,6 +11,8 @@
 #include "binder/statement/bound_create_table_statement.h"
 #include "binder/statement/bound_insert_statement.h"
 #include "binder/statement/bound_select_statement.h"
+#include "binder/statement/bound_delete_statement.h"
+#include "binder/statement/bound_update_statement.h"
 #include "logical/logical_operator.h"
 #include "physical/physical_operator.h"
 #include "physical/expression/physical_expression.h"
@@ -46,5 +48,7 @@ namespace YourSQL {
         auto LogicalInsertPlan(std::unique_ptr<BoundInsertStatement>) -> std::unique_ptr<LogicalOperator>;
         auto LogicalSelectPlan(
             std::unique_ptr<BoundSelectStatement> select_statement) -> std::unique_ptr<LogicalOperator>;
+        auto LogicalDeletePlan(std::unique_ptr<BoundDeleteStatement>) -> std::unique_ptr<LogicalOperator>;
+        auto LogicalUpdatePlan(std::unique_ptr<BoundUpdateStatement>) -> std::unique_ptr<LogicalOperator>;
     };
 }

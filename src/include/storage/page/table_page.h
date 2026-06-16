@@ -58,11 +58,41 @@ namespace YourSQL {
         auto updateTuple(const Tuple &tuple,const RID &rid) -> void;
         auto DeleteTuple(const RID &rid) -> void;
         auto GetTuple(const RID &rid, Tuple *tuple) -> void;
+
+        // MVCC：标记删除（不物理移除），写入删除事务 id 与旧版本 undo 指针
+        auto MarkDelete(const RID &rid, tx_id_t trx_id, UndoPointer roll_ptr) -> void;
+
+        // 回滚支持：把记录头恢复成给定的 trx_id / roll_ptr / flags（撤销删除标记）
+        auto RestoreRecord(const RID &rid, tx_id_t trx_id, UndoPointer roll_ptr, uint16_t flags) -> void;
+        // 回滚支持：把记录置为 dead（对所有快照不可见）
+        auto MarkDead(const RID &rid) -> void;
+
+        // 读取某条记录头中的 trx_id / flags / roll_ptr（不解析 payload）
+        auto ReadRecordTrxId(const RID &rid) -> tx_id_t;
+        auto ReadRecordFlags(const RID &rid) -> uint16_t;
+        auto ReadRecordRollPtr(const RID &rid) -> UndoPointer;
+
+        // 当前页是否还能容纳给定大小的 tuple（含 slot）
+        auto HasSpaceFor(uint16_t tuple_size) const -> bool;
+
+        // next_page_id 持久化访问
+        auto GetNextPageId() const -> page_id_t { return header_.next_page_id; }
+        auto SetNextPageId(page_id_t next_page_id) -> void;
+
+        // 设置页 LSN（WAL：页修改后记录产生该修改的日志 lsn）
+        auto SetLsn(lsn_t lsn) -> void;
+        auto GetLsn() const -> lsn_t { return header_.lsn_; }
+
         [[nodiscard]] auto GetPage() const -> Page* {
             return page_;
         }
 
     private:
+        // 把内存中的 header_ 写回页缓冲区
+        auto WriteHeader() -> void;
+        // 计算第 row_id 个 slot 在页内的起始偏移
+        auto SlotOffset(row_id_t row_id) const -> size_t;
+
         std::shared_ptr<MetaPage> meta_page_;
         entry_id table_id_;
         Page *page_;

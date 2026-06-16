@@ -13,17 +13,19 @@ auto Row::Deserialize(const Tuple &tuple) -> void {
     auto data = tuple.data_;
     this->schema_ = tuple.schema_;
 
-    // init header
-    memcpy(&header_.trx_id_,data, sizeof(tx_id_t));
-    memcpy(&header_.roll_ptr_,data + sizeof(tx_id_t), sizeof(undo_id_t));
-    memcpy(&header_.flags_,data + sizeof(tx_id_t) + sizeof(undo_id_t), sizeof(uint16_t));
-
+    // init header（紧凑布局：trx_id | roll_ptr(page_id, slot) | flags）
+    memcpy(&header_.trx_id_, data + REC_TRX_OFFSET, sizeof(tx_id_t));
+    memcpy(&header_.roll_ptr_.page_id_, data + REC_ROLLPTR_OFFSET, sizeof(page_id_t));
+    memcpy(&header_.roll_ptr_.slot, data + REC_ROLLPTR_OFFSET + sizeof(page_id_t), sizeof(uint32_t));
+    memcpy(&header_.flags_, data + REC_FLAGS_OFFSET, sizeof(uint16_t));
 
     size_t meta_size = schema_.columns_.size();
 
+    // null 位图紧跟在记录头之后，每列 1 字节
+    const char *null_bitmap = data + PAYLOAD_OFFSET;
     size_t offset = PAYLOAD_OFFSET + meta_size;
     for (size_t i = 0; i < schema_.columns_.size(); i++) {
-        if (data[i] == '0') {
+        if (null_bitmap[i] == '0') {
             values_.emplace_back();
         } else {
             switch (schema_.columns_[i].column_types) {
@@ -98,8 +100,6 @@ auto Row::Serialize() -> char * {
                 case ColumnTypes::VARCHAR2:
                 case ColumnTypes::VARCHAR: {
                     size += sizeof(size_t);
-                    Value value = values_[i];
-                    std::cout << "row:" << value.GetString() <<std::endl;
                     size += values_[i].GetString().size();
                     break;
                 }
@@ -115,8 +115,10 @@ auto Row::Serialize() -> char * {
     char *data = new char[PAYLOAD_OFFSET + size];
     memcpy(data + header_offset,&header_.trx_id_,sizeof(tx_id_t));
     header_offset += sizeof(tx_id_t);
-    memcpy(data + header_offset,&header_.roll_ptr_,sizeof(undo_id_t));
-    header_offset += sizeof(undo_id_t);
+    memcpy(data + header_offset,&header_.roll_ptr_.page_id_,sizeof(page_id_t));
+    header_offset += sizeof(page_id_t);
+    memcpy(data + header_offset,&header_.roll_ptr_.slot,sizeof(uint32_t));
+    header_offset += sizeof(uint32_t);
     memcpy(data + header_offset,&header_.flags_,sizeof(uint16_t));
     header_offset += sizeof(uint16_t);
     memcpy(data + header_offset, meta, schema_.columns_.size());

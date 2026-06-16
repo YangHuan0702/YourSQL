@@ -32,6 +32,19 @@ TableIterator::TableIterator(std::shared_ptr<BufferManager> buffer_manager,
     // 加载第一个页面
     LoadPage();
     current_row_index_ = 1;
+
+    // 首页可能为空（已分配但未写入，或数据在后续页），向后跳到第一条有效记录
+    while (current_page_num_rows_ == 0) {
+        page_id_t next_page_id = current_table_page_->GetNextPageId();
+        buffer_manager_->Release(current_page_id_);
+        if (next_page_id == INVALID_PAGE_ID) {
+            is_end_ = true;
+            break;
+        }
+        current_page_id_ = next_page_id;
+        LoadPage();
+        current_row_index_ = 1;
+    }
 }
 
 auto TableIterator::operator*() -> Tuple {
@@ -56,12 +69,12 @@ auto TableIterator::operator++() -> TableIterator & {
 
     current_row_index_++;
 
-    // 检查是否需要换页
-    if (current_row_index_ >= current_page_num_rows_) {
-        // 获取下一页的 page_id
-        page_id_t next_page_id = current_table_page_->GetPage()->next_page_id_;
+    // 检查是否需要换页：row_id 取值 1..num_rows，超过 num_rows 才翻页
+    if (current_row_index_ > current_page_num_rows_) {
+        // 从页头读取下一页 id（持久化的链接，而非内存态 Page::next_page_id_）
+        page_id_t next_page_id = current_table_page_->GetNextPageId();
         buffer_manager_->Release(current_page_id_);
-        if (next_page_id == 0) {
+        if (next_page_id == INVALID_PAGE_ID) {
             // 没有下一页了，到达末尾
             is_end_ = true;
         } else {
@@ -69,6 +82,18 @@ auto TableIterator::operator++() -> TableIterator & {
             current_page_id_ = next_page_id;
             LoadPage();
             current_row_index_ = 1;
+            // 跳过可能出现的空页，继续向后找有数据的页
+            while (current_page_num_rows_ == 0) {
+                page_id_t nxt = current_table_page_->GetNextPageId();
+                buffer_manager_->Release(current_page_id_);
+                if (nxt == INVALID_PAGE_ID) {
+                    is_end_ = true;
+                    break;
+                }
+                current_page_id_ = nxt;
+                LoadPage();
+                current_row_index_ = 1;
+            }
         }
     } else {
         buffer_manager_->TouchPage(current_page_id_);

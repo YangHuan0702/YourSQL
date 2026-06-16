@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <iomanip>
+#include "executor/executor_delete.h"
+#include "executor/executor_update.h"
 #include "storage/page/tuple.h"
 #include "storage/page/row.h"
 
@@ -129,6 +131,32 @@ auto Execute::ExecuteInsert(std::unique_ptr<Executor> root) -> void {
     root->Close();
 
     std::cout<<"执行成功了哥们！"<< std::endl;
+}
+
+
+auto Execute::ExecuteDelete(std::unique_ptr<Executor> root) -> void {
+    root->Open();
+    Tuple tuple;
+    while (root->Next(&tuple)) {}
+    size_t count = 0;
+    if (auto *del = dynamic_cast<ExecutorDelete *>(root.get())) {
+        count = del->GetDeletedCount();
+    }
+    root->Close();
+    std::cout << count << " row(s) deleted" << std::endl;
+}
+
+
+auto Execute::ExecuteUpdate(std::unique_ptr<Executor> root) -> void {
+    root->Open();
+    Tuple tuple;
+    while (root->Next(&tuple)) {}
+    size_t count = 0;
+    if (auto *upd = dynamic_cast<ExecutorUpdate *>(root.get())) {
+        count = upd->GetUpdatedCount();
+    }
+    root->Close();
+    std::cout << count << " row(s) updated" << std::endl;
 }
 
 

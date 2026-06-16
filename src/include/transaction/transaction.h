@@ -8,6 +8,7 @@
 
 #include "read_view.h"
 #include "undo_log.h"
+#include "write_record.h"
 #include "common/constant.h"
 #include "common/type.h"
 #include "common/types/isolation_level.h"
@@ -33,6 +34,6 @@ namespace YourSQL {
 
         std::shared_ptr<ReadView> read_view_;
         std::vector<UndoPointer> undo_ids_;
-        std::vector<RID> write_set_;
+        std::vector<WriteRecord> write_set_;
     };
 }

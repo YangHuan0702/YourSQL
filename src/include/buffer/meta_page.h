@@ -69,7 +69,7 @@ namespace YourSQL {
         auto UpdateTableLastId(entry_id table_id, page_id_t last_page_id) -> void ;
         auto UpdateTableFirstId(entry_id table_id, page_id_t first_page_id) -> void ;
 
-        auto UpdateTableRows(entry_id table_id, size_t change_size) -> void ;
+        auto UpdateTableRows(entry_id table_id, int64_t change_size) -> void ;
 
         auto GetFirstPageId(const std::string &tale_name) -> page_id_t;
 

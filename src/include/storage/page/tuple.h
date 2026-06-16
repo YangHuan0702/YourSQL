@@ -17,7 +17,7 @@ namespace YourSQL {
 
 
 #define RECORD_DEL (1 << 0)
-#define FLAG_OFFSET (sizeof(trx_id_t) + sizeof(UndoPointer))
+#define RECORD_DEAD (1 << 1)
 
     struct RecordHeader {
         // 最后一个插入或更新该记录的事务 ID
@@ -26,7 +26,22 @@ namespace YourSQL {
         UndoPointer roll_ptr_{};
         uint16_t flags_{};
     };
-#define PAYLOAD_OFFSET sizeof(RecordHeader)
+
+    /**
+     * 记录头在磁盘/页内的序列化布局（紧凑、无结构体对齐填充）：
+     *   [ trx_id(8) | roll_ptr.page_id(8) | roll_ptr.slot(4) | flags(2) ]
+     * 之后紧跟 null 位图（每列 1 字节）与各列 payload。
+     *
+     * 注意：不要用 sizeof(RecordHeader) 作为偏移，它含对齐填充，与实际写入不一致。
+     */
+#define REC_TRX_OFFSET      (0)
+#define REC_ROLLPTR_OFFSET  (REC_TRX_OFFSET + sizeof(tx_id_t))
+#define REC_ROLLPTR_SIZE    (sizeof(page_id_t) + sizeof(uint32_t))
+#define REC_FLAGS_OFFSET    (REC_ROLLPTR_OFFSET + REC_ROLLPTR_SIZE)
+#define REC_HEADER_SIZE     (REC_FLAGS_OFFSET + sizeof(uint16_t))
+
+// 兼容旧名：payload（含 null 位图）从记录头之后开始
+#define PAYLOAD_OFFSET REC_HEADER_SIZE
 
 
     class Tuple {

@@ -18,6 +18,9 @@ namespace YourSQL {
 
         auto AppendLogRecord(const LogRecord &log_record) -> lsn_t;
 
+        // 强制把日志缓冲刷到磁盘（commit 时调用，force-log-at-commit）
+        auto Flush() -> void;
+
         auto GetNextLsn() -> lsn_t;
 
     private:

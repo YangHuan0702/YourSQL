@@ -26,5 +26,9 @@ namespace YourSQL {
         size_t cursor_{};
         TableIterator *iterator_;
         Schema schema_;
+
+    private:
+        // 判断写入版本的事务 id 对当前事务快照是否可见
+        auto IsVisible(tx_id_t version_trx_id) -> bool;
     };
 }

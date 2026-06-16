@@ -9,12 +9,16 @@
 #include "executor/executor_seq_scan.h"
 #include "executor/executor_values.h"
 #include "executor/executor_insert.h"
+#include "executor/executor_delete.h"
+#include "executor/executor_update.h"
 #include "planner/physical/physical_create_table.h"
 #include "planner/physical/physical_filter.h"
 #include "planner/physical/physical_projection.h"
 #include "planner/physical/physical_seq_scan.h"
 #include "planner/physical/physical_values.h"
 #include "planner/physical/physical_insert.h"
+#include "planner/physical/physical_delete.h"
+#include "planner/physical/physical_update.h"
 
 using namespace YourSQL;
 
@@ -59,6 +63,16 @@ auto ExecutorFactory::BuildExecutor(std::unique_ptr<PhysicalOperator> &physical_
                 executor_insert->children_.push_back(BuildExecutor(operator_));
             }
             return executor_insert;
+        }
+        case PhysicalOperatorTypes::PHYSICAL_DELETE: {
+            auto del = dynamic_cast<PhysicalDelete *>(physical_operator.get());
+            auto table_name = context_->catalog_->GetTableName(del->table_id_);
+            return std::make_unique<ExecutorDelete>(context_, table_name, std::move(del->filter_));
+        }
+        case PhysicalOperatorTypes::PHYSICAL_UPDATE: {
+            auto upd = dynamic_cast<PhysicalUpdate *>(physical_operator.get());
+            return std::make_unique<ExecutorUpdate>(context_, upd->table_id_,
+                                                    std::move(upd->set_clauses_), std::move(upd->filter_));
         }
         default:
             throw std::runtime_error("Unsupported physical operator type");

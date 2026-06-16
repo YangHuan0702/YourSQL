@@ -84,7 +84,7 @@ TEST(Executor, ExecutorInsertSQLTest) {
 
         Execute execute(executor_context);
 
-        ExecutorFactory factory(executor_context, table_id);
+        ExecutorFactory factory(executor_context);
 
         auto executor = factory.BuildExecutor(physical_operator);
         execute.ExecuteInsert(std::move(executor));

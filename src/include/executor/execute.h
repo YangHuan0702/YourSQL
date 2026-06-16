@@ -17,6 +17,8 @@ namespace YourSQL {
 
         auto ExecuteQuery(std::unique_ptr<Executor> root) -> void;
         auto ExecuteInsert(std::unique_ptr<Executor> root) -> void;
+        auto ExecuteDelete(std::unique_ptr<Executor> root) -> void;
+        auto ExecuteUpdate(std::unique_ptr<Executor> root) -> void;
         auto ExecutorCreateTable(std::unique_ptr<Executor> root) -> void;
         auto PrintTuple(const Tuple &tuple) -> void;
 

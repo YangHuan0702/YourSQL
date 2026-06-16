@@ -3,6 +3,7 @@
 //
 #include "storage/page/table_page.h"
 
+#include "common/constant.h"
 #include "storage/page/row.h"
 
 using namespace YourSQL;
@@ -40,45 +41,94 @@ TablePage::TablePage(std::shared_ptr<MetaPage> meta_page,entry_id table_id,Page 
         header_.num_rows = 0;
         header_.page_id = page->id_;
         header_.next_page_id = 0;
+        header_.lsn_ = 0;
 
-        size_t offset = 0;
-        memcpy(data+offset,&header_.version,sizeof(uint16_t));
-        offset += sizeof(uint16_t);
-        memcpy(data+offset,&header_.num_rows,sizeof(uint32_t));
-        offset += sizeof(uint32_t);
-        memcpy(data+offset,&header_.page_id,sizeof(page_id_t));
-        offset += sizeof(page_id_t);
-        memcpy(data+offset,&header_.next_page_id,sizeof(page_id_t));
-
+        WriteHeader();
         page_->is_dirty_ = true;
     }
+}
+
+auto TablePage::WriteHeader() -> void {
+    char *data = page_->data_;
+    size_t offset = 0;
+    memcpy(data + offset, &header_.version, sizeof(uint16_t));
+    offset += sizeof(uint16_t);
+    memcpy(data + offset, &header_.num_rows, sizeof(uint32_t));
+    offset += sizeof(uint32_t);
+    memcpy(data + offset, &header_.page_id, sizeof(page_id_t));
+    offset += sizeof(page_id_t);
+    memcpy(data + offset, &header_.next_page_id, sizeof(page_id_t));
+    offset += sizeof(page_id_t);
+    memcpy(data + offset, &header_.lsn_, sizeof(lsn_t));
+    page_->is_dirty_ = true;
+}
+
+auto TablePage::SlotOffset(row_id_t row_id) const -> size_t {
+    return PAGE_SIZE - row_id * SLOT_SIZE;
+}
+
+auto TablePage::SetNextPageId(page_id_t next_page_id) -> void {
+    std::lock_guard lock(mutex_);
+    header_.next_page_id = next_page_id;
+    WriteHeader();
+}
+
+auto TablePage::SetLsn(lsn_t lsn) -> void {
+    std::lock_guard lock(mutex_);
+    header_.lsn_ = lsn;
+    WriteHeader();
+}
+
+auto TablePage::HasSpaceFor(uint16_t tuple_size) const -> bool {
+    return tuple_size + SLOT_SIZE <= free_size;
 }
 
 
 auto TablePage::GetTuple(const RID &rid, Tuple *tuple) -> void {
     std::lock_guard lock(mutex_);
-    size_t offset = PAGE_SIZE - rid.row_id_ * SLOT_SIZE;
+    size_t offset = SlotOffset(rid.row_id_);
 
     uint16_t slot_offset = 0;
     uint16_t size = 0;
     memcpy(&slot_offset,page_->data_+offset,sizeof(uint16_t));
     memcpy(&size,page_->data_+offset+sizeof(uint16_t),sizeof(uint16_t));
 
-
+    // 返回包含记录头的原始 tuple 数据；可见性/删除判断交给上层 MVCC 逻辑
     auto target = new char[size];
     memcpy(target,page_->data_+slot_offset,size);
-    uint16_t flag;
-    size_t flags_offset = sizeof(tx_id_t) + sizeof(UndoPointer);
-    memcpy(&flag,target + flags_offset,sizeof(uint16_t));
+    tuple->data_ = target;
+    tuple->tuple_size_ = size;
+}
 
-    if (!(flags_offset & RECORD_DEL)) {
-        memcpy(target,page_->data_+slot_offset,size);
-        tuple->data_ = target;
-        tuple->tuple_size_ = size;
-    } else {
-        tuple->data_ = nullptr;
-        tuple->tuple_size_ = 0;
-    }
+auto TablePage::ReadRecordTrxId(const RID &rid) -> tx_id_t {
+    std::lock_guard lock(mutex_);
+    size_t offset = SlotOffset(rid.row_id_);
+    uint16_t slot_offset = 0;
+    memcpy(&slot_offset, page_->data_ + offset, sizeof(uint16_t));
+    tx_id_t trx_id = 0;
+    memcpy(&trx_id, page_->data_ + slot_offset + REC_TRX_OFFSET, sizeof(tx_id_t));
+    return trx_id;
+}
+
+auto TablePage::ReadRecordFlags(const RID &rid) -> uint16_t {
+    std::lock_guard lock(mutex_);
+    size_t offset = SlotOffset(rid.row_id_);
+    uint16_t slot_offset = 0;
+    memcpy(&slot_offset, page_->data_ + offset, sizeof(uint16_t));
+    uint16_t flags = 0;
+    memcpy(&flags, page_->data_ + slot_offset + REC_FLAGS_OFFSET, sizeof(uint16_t));
+    return flags;
+}
+
+auto TablePage::ReadRecordRollPtr(const RID &rid) -> UndoPointer {
+    std::lock_guard lock(mutex_);
+    size_t offset = SlotOffset(rid.row_id_);
+    uint16_t slot_offset = 0;
+    memcpy(&slot_offset, page_->data_ + offset, sizeof(uint16_t));
+    UndoPointer roll_ptr{};
+    memcpy(&roll_ptr.page_id_, page_->data_ + slot_offset + REC_ROLLPTR_OFFSET, sizeof(page_id_t));
+    memcpy(&roll_ptr.slot, page_->data_ + slot_offset + REC_ROLLPTR_OFFSET + sizeof(page_id_t), sizeof(uint32_t));
+    return roll_ptr;
 }
 
 
@@ -113,7 +163,9 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
 
     free_size -= SLOT_SIZE + tuple.tuple_size_;
     header_.num_rows += 1;
+    rid->page_id_ = header_.page_id;
     rid->row_id_ = header_.num_rows;
+    WriteHeader();
     page_->is_dirty_ = true;
     meta_page_->UpdateTableRows(table_id_,1);
     return true;
@@ -123,33 +175,11 @@ auto TablePage::InsertTuple(const Tuple &tuple,RID *rid) -> bool {
 
 
 auto TablePage::updateTuple(const Tuple &tuple, const RID &rid) -> void {
-    std::lock_guard lock(mutex_);
-    int slot_offset = PAGE_SIZE - rid.row_id_ * SLOT_SIZE;
-    Slot slot{};
-    memcpy(&slot.offset, page_->data_ + slot_offset, sizeof(uint16_t));
-    memcpy(&slot.size, page_->data_ + slot_offset + sizeof(uint16_t), sizeof(uint16_t));
-
-
-    size_t prev_size = 0;
-    for (size_t i = 1; i < rid.row_id_; ++i) {
-        size_t offset = PAGE_SIZE - i * SLOT_SIZE + sizeof(uint16_t);
-        uint16_t size = 0;
-        memcpy(&size, page_->data_+offset, sizeof(uint16_t));
-        prev_size += size;
-    }
-
-    if (slot.size <= tuple.tuple_size_) {
-        memcpy(page_->data_ + slot.offset, tuple.data_, tuple.tuple_size_);
-        memmove(page_->data_ + slot.offset + tuple.tuple_size_, page_->data_ + slot.offset + slot.size, prev_size);
-    } else {
-        size_t diff_size = tuple.tuple_size_ - slot.size;
-        if (free_size < diff_size) {
-            // (TODO)删除当前页的数据并新增页去构建
-        }
-        memcpy(page_->data_ + slot_offset + sizeof(uint16_t), &tuple.tuple_size_, sizeof(uint16_t));
-        memmove(page_->data_+slot.offset + slot.size, page_->data_+slot.offset + slot.size+diff_size,prev_size);
-        memcpy(page_->data_ + slot.offset, &tuple.data_, tuple.tuple_size_);
-    }
+    // MVCC 约束：UPDATE 不做原地覆盖，应由执行器实现为 delete-old + insert-new。
+    // 这里仅保留接口；如被调用说明上层逻辑有误。
+    (void) tuple;
+    (void) rid;
+    throw std::runtime_error("TablePage::updateTuple: in-place update is forbidden under MVCC; use delete+insert");
 }
 
 
@@ -158,19 +188,79 @@ auto TablePage::GetCount() const -> uint32_t {
 }
 
 
-auto TablePage::DeleteTuple(const RID &rid) -> void {
+auto TablePage::MarkDelete(const RID &rid, tx_id_t trx_id, UndoPointer roll_ptr) -> void {
     std::lock_guard lock(mutex_);
 
-    int offset = PAGE_SIZE - rid.row_id_ * SLOT_SIZE;
-    size_t record_offset = 0;
-    memcpy(&record_offset, page_->data_ + offset , sizeof(uint16_t));
+    size_t offset = SlotOffset(rid.row_id_);
+    uint16_t slot_offset = 0;
+    memcpy(&slot_offset, page_->data_ + offset, sizeof(uint16_t));
 
-    uint16_t flags_offset = sizeof(tx_id_t) + sizeof(UndoPointer);
-    memcpy(&flags_offset, page_->data_ + record_offset + flags_offset , sizeof(uint16_t));
+    uint16_t flags = 0;
+    memcpy(&flags, page_->data_ + slot_offset + REC_FLAGS_OFFSET, sizeof(uint16_t));
 
-    if (!(flags_offset & RECORD_DEL)) {
-        flags_offset |= RECORD_DEL;
-        memcpy(page_->data_ + record_offset + flags_offset,&flags_offset,sizeof(uint16_t));
-        meta_page_->UpdateTableRows(table_id_,-1);
+    if (flags & RECORD_DEL) {
+        // 已被删除，幂等返回
+        return;
     }
+
+    flags |= RECORD_DEL;
+    // 写删除事务 id、指向旧版本的 undo 指针、删除标记
+    memcpy(page_->data_ + slot_offset + REC_TRX_OFFSET, &trx_id, sizeof(tx_id_t));
+    memcpy(page_->data_ + slot_offset + REC_ROLLPTR_OFFSET, &roll_ptr.page_id_, sizeof(page_id_t));
+    memcpy(page_->data_ + slot_offset + REC_ROLLPTR_OFFSET + sizeof(page_id_t), &roll_ptr.slot, sizeof(uint32_t));
+    memcpy(page_->data_ + slot_offset + REC_FLAGS_OFFSET, &flags, sizeof(uint16_t));
+
+    page_->is_dirty_ = true;
+    meta_page_->UpdateTableRows(table_id_, -1);
+}
+
+
+auto TablePage::DeleteTuple(const RID &rid) -> void {
+    // 兼容旧接口：无事务信息的删除标记
+    MarkDelete(rid, INVALID_TX_ID, UndoPointer{});
+}
+
+
+auto TablePage::RestoreRecord(const RID &rid, tx_id_t trx_id, UndoPointer roll_ptr, uint16_t flags) -> void {
+    std::lock_guard lock(mutex_);
+
+    size_t offset = SlotOffset(rid.row_id_);
+    uint16_t slot_offset = 0;
+    memcpy(&slot_offset, page_->data_ + offset, sizeof(uint16_t));
+
+    uint16_t old_flags = 0;
+    memcpy(&old_flags, page_->data_ + slot_offset + REC_FLAGS_OFFSET, sizeof(uint16_t));
+
+    // 覆写记录头三字段，恢复到写操作之前的状态
+    memcpy(page_->data_ + slot_offset + REC_TRX_OFFSET, &trx_id, sizeof(tx_id_t));
+    memcpy(page_->data_ + slot_offset + REC_ROLLPTR_OFFSET, &roll_ptr.page_id_, sizeof(page_id_t));
+    memcpy(page_->data_ + slot_offset + REC_ROLLPTR_OFFSET + sizeof(page_id_t), &roll_ptr.slot, sizeof(uint32_t));
+    memcpy(page_->data_ + slot_offset + REC_FLAGS_OFFSET, &flags, sizeof(uint16_t));
+
+    // 若此前是删除标记、现在恢复为可见，则行数 +1
+    if ((old_flags & RECORD_DEL) && !(flags & RECORD_DEL)) {
+        meta_page_->UpdateTableRows(table_id_, 1);
+    }
+    page_->is_dirty_ = true;
+}
+
+
+auto TablePage::MarkDead(const RID &rid) -> void {
+    std::lock_guard lock(mutex_);
+
+    size_t offset = SlotOffset(rid.row_id_);
+    uint16_t slot_offset = 0;
+    memcpy(&slot_offset, page_->data_ + offset, sizeof(uint16_t));
+
+    uint16_t flags = 0;
+    memcpy(&flags, page_->data_ + slot_offset + REC_FLAGS_OFFSET, sizeof(uint16_t));
+
+    bool was_live = !(flags & RECORD_DEL) && !(flags & RECORD_DEAD);
+    flags |= RECORD_DEAD;
+    memcpy(page_->data_ + slot_offset + REC_FLAGS_OFFSET, &flags, sizeof(uint16_t));
+
+    if (was_live) {
+        meta_page_->UpdateTableRows(table_id_, -1);
+    }
+    page_->is_dirty_ = true;
 }
